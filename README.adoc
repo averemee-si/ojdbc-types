@@ -10,12 +10,6 @@ gradle clean build
  
 The generated jar files can be found at: `build/libs/`.
 
-An uber jar containing the library and all its relocated dependencies except the Oracle JDBC driver can also be built. Use this command: 
-----
-gradle clean shadowJar
-----
-
-The generated uber jar file can also be found at: `build/libs/`. At runtime, the uber jar expects to find the Oracle JDBC driver on the classpath.
  
 === Validating secure dependencies
 To ensure no security vulnerabilities in the dependency libraries, run the following.
@@ -27,7 +21,7 @@ If the above reports any vulnerabilities, upgrade dependencies to use the respec
 
 == Version and release history
 
-=== 0.5.0 (SEP-2023)
+=== 0.7.0 (SEP-2023)
 Initial build
 
 
