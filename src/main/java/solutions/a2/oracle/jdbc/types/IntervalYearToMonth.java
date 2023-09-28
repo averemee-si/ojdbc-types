@@ -26,7 +26,7 @@ import java.time.Period;
 public class IntervalYearToMonth implements Serializable {
 
 	private static final long serialVersionUID = -4521533224944486365L;
-	protected static final int DATA_LENGTH = 5;
+	public static final int DATA_LENGTH = 5;
 
 	/**
 	 * The number of years.
