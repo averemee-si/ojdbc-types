@@ -41,9 +41,9 @@ public class OracleTimestampTest {
 			final LocalDateTime ldt = LocalDateTime.now();
 			final ZoneId zoneId = ZoneId.systemDefault();
 			final ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
-			final Timestamp ts = Timestamp.valueOf(ldt);			
+			final Timestamp ts = Timestamp.valueOf(ldt);		
 			final TIMESTAMP oraDate = new TIMESTAMP(ts);
-			System.out.println("Setting all TIMESTAMP related information to " + ldt.toString());
+			System.out.println("Setting all TIMESTAMP related information to ->" + ldt.toString());
 	
 			final byte[] byteArray = new byte[OracleTimestamp.DATA_LENGTH];
 			for (int i = 0; i < byteArray.length; i++) {

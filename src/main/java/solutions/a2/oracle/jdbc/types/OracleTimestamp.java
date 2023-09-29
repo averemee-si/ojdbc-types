@@ -105,6 +105,7 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	/**
 	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.ZonedDateTime ZonedDateTime}
 	 * 
+	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
 	 * @param zoneId timezone
 	 * @return {@link java.time.ZonedDateTime ZonedDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
