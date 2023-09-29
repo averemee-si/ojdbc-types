@@ -26,6 +26,10 @@ import java.time.Duration;
 public class IntervalDayToSecond implements Serializable {
 
 	private static final long serialVersionUID = 4962903459011562735L;
+	
+	/**
+	 * Length of INTERVALDS
+	 */
 	public static final int DATA_LENGTH = 11;
 
 	/**
