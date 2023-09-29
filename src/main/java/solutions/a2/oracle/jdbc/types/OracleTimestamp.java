@@ -17,6 +17,8 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 
 /**
@@ -73,8 +75,8 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 					RawDataUtilities.unsigned(value[3]),
 					RawDataUtilities.unsigned(value[4]) - 1,
 					RawDataUtilities.unsigned(value[5]) - 1,
-					RawDataUtilities.unsigned(value[6]) - 1)
-				.plusNanos(RawDataUtilities.decodeOraBytes(value, 7));
+					RawDataUtilities.unsigned(value[6]) - 1,
+					RawDataUtilities.decodeOraBytes(value, 7));
 	}
 
 	/**
@@ -96,8 +98,58 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 					value[3],
 					value[4] - 1,
 					value[5] - 1,
-					value[6] - 1)
-				.plusNanos(RawDataUtilities.decodeOraBytes(value, 7));
+					value[6] - 1,
+					RawDataUtilities.decodeOraBytes(value, 7));
+	}
+
+	/**
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.ZonedDateTime ZonedDateTime}
+	 * 
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param zoneId timezone
+	 * @return {@link java.time.ZonedDateTime ZonedDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @throws SQLException if the byte array does not contain exactly 11 values
+	 */
+	public static ZonedDateTime toZonedDateTime(final byte[] value, final ZoneId zoneId) throws SQLException {
+		if (value.length != DATA_LENGTH) {
+			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
+		}
+		return ZonedDateTime
+				.of(
+					(RawDataUtilities.unsigned(value[0]) - 100) *100 +		// 1st byte century - 100
+						(RawDataUtilities.unsigned(value[1]) - 100),		// 2nd byte year - 100
+					RawDataUtilities.unsigned(value[2]),
+					RawDataUtilities.unsigned(value[3]),
+					RawDataUtilities.unsigned(value[4]) - 1,
+					RawDataUtilities.unsigned(value[5]) - 1,
+					RawDataUtilities.unsigned(value[6]) - 1,
+					RawDataUtilities.decodeOraBytes(value, 7),
+					zoneId);
+	}
+
+	/**
+	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.ZonedDateTime ZonedDateTime}
+	 * 
+	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param zoneId timezone
+	 * @return {@link java.time.ZonedDateTime ZonedDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @throws SQLException if the int array does not contain exactly 11 values
+	 */
+	public static ZonedDateTime toZonedDateTime(final int[] value, final ZoneId zoneId) throws SQLException {
+		if (value.length != DATA_LENGTH) {
+			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
+		}
+		return ZonedDateTime
+				.of(
+					(value[0] - 100) *100 +		// 1st byte century - 100
+						(value[1] - 100),		// 2nd byte year - 100
+					value[2],
+					value[3],
+					value[4] - 1,
+					value[5] - 1,
+					value[6] - 1,
+					RawDataUtilities.decodeOraBytes(value, 7),
+					zoneId);
 	}
 
 	/**

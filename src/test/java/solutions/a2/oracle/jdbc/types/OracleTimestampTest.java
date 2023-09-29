@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,6 +39,8 @@ public class OracleTimestampTest {
 	public void test() {
 		try {
 			final LocalDateTime ldt = LocalDateTime.now();
+			final ZoneId zoneId = ZoneId.systemDefault();
+			final ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
 			final Timestamp ts = Timestamp.valueOf(ldt);			
 			final TIMESTAMP oraDate = new TIMESTAMP(ts);
 			System.out.println("Setting all TIMESTAMP related information to " + ldt.toString());
@@ -72,6 +76,9 @@ public class OracleTimestampTest {
 			assertEquals(ldt.toString(), otByte.toString(), "Strings must be the same!");
 			assertEquals(ldt.toString(), OracleTimestamp.toString(intArray), "Strings must be the same!");
 			assertEquals(ldt.toString(), OracleTimestamp.toString(byteArray), "Strings must be the same!");
+
+			assertTrue(zdt.isEqual(OracleTimestamp.toZonedDateTime(intArray, zoneId)));
+			assertTrue(zdt.isEqual(OracleTimestamp.toZonedDateTime(byteArray, zoneId)));
 
 		} catch (SQLException e) {
 			e.printStackTrace();
