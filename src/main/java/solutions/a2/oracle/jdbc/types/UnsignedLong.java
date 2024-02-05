@@ -42,7 +42,7 @@ public class UnsignedLong implements Serializable {
 	/**
 	 * Creates UnsignedLong from a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/NUMBER.html">NUMBER</a>
 	 * 
-	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/NUMBER.html">NUMBER</a> object
+	 * @param oraNumber a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/NUMBER.html">NUMBER</a> object
 	 * @throws SQLException if the byte array represents negative value
 	 */
 	public UnsignedLong(final byte[] oraNumber) throws SQLException {
