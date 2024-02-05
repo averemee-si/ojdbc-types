@@ -21,6 +21,9 @@ If the above reports any vulnerabilities, upgrade dependencies to use the respec
 
 == Version and release history
 
+=== 0.8.0 (FEB-2023)
+UnsignedLong support
+
 === 0.7.0 (SEP-2023)
 Initial build
 
