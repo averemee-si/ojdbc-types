@@ -49,7 +49,7 @@ public class TimestampWithTimeZoneTest {
 			}
 			final int[] intArray = new int[TimestampWithTimeZone.DATA_LENGTH];
 			for (int i = 0; i < intArray.length; i++) {
-				intArray[i] = RawDataUtilities.unsigned(byteArray[i]);
+				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
 			}
 
 			final TimestampWithTimeZone otInt = new TimestampWithTimeZone(intArray);

@@ -50,7 +50,7 @@ public class OracleDateTest {
 			}
 			final int[] intArray = new int[OracleDate.DATA_LENGTH];
 			for (int i = 0; i < intArray.length; i++) {
-				intArray[i] = RawDataUtilities.unsigned(byteArray[i]);
+				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
 			}
 
 			final OracleDate odInt = new OracleDate(intArray);

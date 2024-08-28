@@ -51,7 +51,7 @@ public class OracleTimestampTest {
 			}
 			final int[] intArray = new int[OracleTimestamp.DATA_LENGTH];
 			for (int i = 0; i < intArray.length; i++) {
-				intArray[i] = RawDataUtilities.unsigned(byteArray[i]);
+				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
 			}
 
 			final OracleTimestamp otInt = new OracleTimestamp(intArray);
