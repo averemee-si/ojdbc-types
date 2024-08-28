@@ -52,7 +52,7 @@ public class IntervalYearToMonth implements Serializable {
 			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
 		}
 		years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		months = RawDataUtilities.unsigned(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		months = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class IntervalYearToMonth implements Serializable {
 			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
 		}
 		final int years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int months = RawDataUtilities.unsigned(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int months = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
 		return toPeriod(years, months);
 	}
 
@@ -149,7 +149,7 @@ public class IntervalYearToMonth implements Serializable {
 			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
 		}
 		final int years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int months = RawDataUtilities.unsigned(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int months = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
 		return toString(years, months);
 	}
 

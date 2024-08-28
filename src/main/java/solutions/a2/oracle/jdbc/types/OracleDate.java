@@ -77,13 +77,13 @@ public class OracleDate implements Serializable {
 			throw new SQLException("Wrong representation of Oracle DATE with length = " + value.length);
 		}
 		return LocalDateTime.of(
-				(RawDataUtilities.unsigned(value[0]) - 100) *100 +		// 1st byte century - 100
-						(RawDataUtilities.unsigned(value[1]) - 100),	// 2nd byte year - 100
-				RawDataUtilities.unsigned(value[2]),
-				RawDataUtilities.unsigned(value[3]),
-				RawDataUtilities.unsigned(value[4]) - 1,
-				RawDataUtilities.unsigned(value[5]) - 1,
-				RawDataUtilities.unsigned(value[6]) - 1);
+				(Byte.toUnsignedInt(value[0]) - 100) *100 +		// 1st byte century - 100
+						(Byte.toUnsignedInt(value[1]) - 100),	// 2nd byte year - 100
+				Byte.toUnsignedInt(value[2]),
+				Byte.toUnsignedInt(value[3]),
+				Byte.toUnsignedInt(value[4]) - 1,
+				Byte.toUnsignedInt(value[5]) - 1,
+				Byte.toUnsignedInt(value[6]) - 1);
 	}
 
 	/**

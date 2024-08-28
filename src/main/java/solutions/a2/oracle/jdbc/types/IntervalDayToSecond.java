@@ -64,9 +64,9 @@ public class IntervalDayToSecond implements Serializable {
 			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
 		}
 		days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		hours = RawDataUtilities.unsigned(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		minutes = RawDataUtilities.unsigned(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		seconds = RawDataUtilities.unsigned(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		hours = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		minutes = Byte.toUnsignedInt(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		seconds = Byte.toUnsignedInt(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
 		nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
 	}
 
@@ -153,9 +153,9 @@ public class IntervalDayToSecond implements Serializable {
 			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
 		}
 		final int days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int hours = RawDataUtilities.unsigned(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int minutes = RawDataUtilities.unsigned(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int seconds = RawDataUtilities.unsigned(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int hours = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int minutes = Byte.toUnsignedInt(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int seconds = Byte.toUnsignedInt(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
 		final int nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
 		return toDuration(days, hours, minutes, seconds, nanos);
 	}
@@ -217,9 +217,9 @@ public class IntervalDayToSecond implements Serializable {
 			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
 		}
 		final int days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int hours = RawDataUtilities.unsigned(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int minutes = RawDataUtilities.unsigned(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int seconds = RawDataUtilities.unsigned(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int hours = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int minutes = Byte.toUnsignedInt(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int seconds = Byte.toUnsignedInt(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
 		final int nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
 		return toString(days, hours, minutes, seconds, nanos);
 	}

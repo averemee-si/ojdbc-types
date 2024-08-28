@@ -19,8 +19,8 @@ class RawDataUtilities {
 
 	static int decodeOraBytes(final byte[] array, final int msb) {
 		return
-			unsigned(array[msb + 3]) | unsigned(array[msb + 2]) << 8 |
-			unsigned(array[msb + 1]) << 16 | unsigned(array[msb]) << 24;
+			Byte.toUnsignedInt(array[msb + 3]) | Byte.toUnsignedInt(array[msb + 2]) << 8 |
+			Byte.toUnsignedInt(array[msb + 1]) << 16 | Byte.toUnsignedInt(array[msb]) << 24;
 	}
 
 	static int decodeOraBytes(final int[] array, final int msb) {
@@ -34,10 +34,6 @@ class RawDataUtilities {
 
 	static int decodeOraBytes4I(final int[] array, final int msb) {
 		return -(Integer.MIN_VALUE - decodeOraBytes(array, msb));
-	}
-
-	static int unsigned(final byte value) {
-		return value & 0xFF;
 	}
 
 	static int getHighOrderBits(final int value) {
