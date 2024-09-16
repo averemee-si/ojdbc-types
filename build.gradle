@@ -13,7 +13,7 @@
 
 plugins {
 	id "java-library"
-	id "org.owasp.dependencycheck" version "8.4.3"
+	id "org.owasp.dependencycheck" version "10.0.4"
 	id "maven-publish"
     id "signing"
 }
@@ -21,8 +21,8 @@ plugins {
 java {
 	withSourcesJar()
 	withJavadocJar()
-	sourceCompatibility = JavaVersion.VERSION_1_8
-	targetCompatibility = JavaVersion.VERSION_1_8
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
