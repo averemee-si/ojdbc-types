@@ -21,11 +21,11 @@ package solutions.a2.oracle.utils;
 
 public class FormattingUtils {
 
-	static void leftPad(final StringBuilder sb, final short value, final int length) {
+	public static void leftPad(final StringBuilder sb, final short value, final int length) {
 		leftPad(sb, (int) value, length);
 	}
 
-	static void leftPad(final StringBuilder sb, final int value, final int length) {
+	public static void leftPad(final StringBuilder sb, final int value, final int length) {
 		final String s = Integer.toUnsignedString(value, 0x10);
 		for (int i = 0; i < length - s.length(); i++) {
 			sb.append('0');
@@ -33,7 +33,7 @@ public class FormattingUtils {
 		sb.append(s);
 	}
 
-	static void leftPad(final StringBuilder sb, final long value, final int length) {
+	public static void leftPad(final StringBuilder sb, final long value, final int length) {
 		final String s = Long.toUnsignedString(value, 0x10);
 		for (int i = 0; i < length - s.length(); i++) {
 			sb.append('0');
@@ -41,17 +41,17 @@ public class FormattingUtils {
 		sb.append(s);
 	}
 
-	static String leftPad(final short value, final int length) {
+	public static String leftPad(final short value, final int length) {
 		return leftPad((int) value, length);
 	}
 
-	static String leftPad(final int value, final int length) {
+	public static String leftPad(final int value, final int length) {
 		final StringBuilder sb = new StringBuilder();
 		leftPad(sb, value, length);
 		return sb.toString();
 	}
 
-	static String leftPad(final long value, final int length) {
+	public static String leftPad(final long value, final int length) {
 		final StringBuilder sb = new StringBuilder(18);
 		leftPad(sb, value, length);
 		return sb.toString();
