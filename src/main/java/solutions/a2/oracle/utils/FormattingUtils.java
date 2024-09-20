@@ -22,7 +22,7 @@ package solutions.a2.oracle.utils;
 public class FormattingUtils {
 
 	public static void leftPad(final StringBuilder sb, final short value, final int length) {
-		leftPad(sb, (int) value, length);
+		leftPad(sb, Short.toUnsignedInt(value), length);
 	}
 
 	public static void leftPad(final StringBuilder sb, final int value, final int length) {
@@ -42,7 +42,7 @@ public class FormattingUtils {
 	}
 
 	public static String leftPad(final short value, final int length) {
-		return leftPad((int) value, length);
+		return leftPad(Short.toUnsignedInt(value), length);
 	}
 
 	public static String leftPad(final int value, final int length) {
