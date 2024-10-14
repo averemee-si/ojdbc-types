@@ -41,6 +41,10 @@ public class FormattingUtils {
 		sb.append(s);
 	}
 
+	public static String leftPad(final byte value, final int length) {
+		return leftPad(Byte.toUnsignedInt(value), length);
+	}
+
 	public static String leftPad(final short value, final int length) {
 		return leftPad(Short.toUnsignedInt(value), length);
 	}
