@@ -86,6 +86,18 @@ public class BinaryUtilsBigEndian implements BinaryUtils {
 	}
 	
 	@Override
+	public long getU56(final byte[] buffer, final int offset) {
+		return
+				Byte.toUnsignedLong(buffer[offset + 0]) << 24          |
+				Byte.toUnsignedLong(buffer[offset + 1]) << 16          |
+				Byte.toUnsignedLong(buffer[offset + 2]) <<  8          |
+				Byte.toUnsignedLong(buffer[offset + 3])                |
+				Byte.toUnsignedLong(buffer[offset + 4]) << 40          |
+				Byte.toUnsignedLong(buffer[offset + 5]) << 32          |
+				Byte.toUnsignedLong(buffer[offset + 6]) << 48;
+	}
+
+	@Override
 	public int getU32(final byte[] buffer, final int offset) {
 		return
 				Byte.toUnsignedInt(buffer[offset])     << 24           |

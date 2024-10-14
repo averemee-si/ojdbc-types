@@ -84,7 +84,19 @@ public class BinaryUtilsLittleEndian implements BinaryUtils {
 			} 
 		} 
 	}
-	
+
+	@Override
+	public long getU56(final byte[] buffer, final int offset) {
+		return
+				Byte.toUnsignedLong(buffer[offset + 0])                |
+				Byte.toUnsignedLong(buffer[offset + 1]) <<  8          |
+				Byte.toUnsignedLong(buffer[offset + 2]) << 16          |
+				Byte.toUnsignedLong(buffer[offset + 3]) << 24          |
+				Byte.toUnsignedLong(buffer[offset + 4]) << 32          |
+				Byte.toUnsignedLong(buffer[offset + 5]) << 40          |
+				Byte.toUnsignedLong(buffer[offset + 6]) << 48;
+	}
+
 	@Override
 	public int getU32(final byte[] buffer, final int offset) {
 		return

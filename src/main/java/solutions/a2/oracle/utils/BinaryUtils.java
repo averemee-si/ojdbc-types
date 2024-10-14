@@ -28,6 +28,7 @@ public interface BinaryUtils {
 
 	long getScn(final byte[] buffer, final int offset);
 	long getScn4Record(final byte[] buffer, final int offset);
+	long getU56(final byte[] buffer, final int offset);
 	int getU32(final byte[] buffer, final int offset);
 	short getU16(final byte[] buffer, final int offset);
 	short getU16Special(final byte[] buffer, final int offset);
