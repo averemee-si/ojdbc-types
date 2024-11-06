@@ -26,6 +26,8 @@ import java.util.Objects;
  */
 public class RowId implements Serializable {
 
+	public static RowId ZERO = new RowId(0, 0, (short) 0);
+
 	private static final long serialVersionUID = 5763607360618681704L;
 	private static final int ROWID_SIZE = 18;
 	private static final byte[] fromBase64 = new byte[] {
