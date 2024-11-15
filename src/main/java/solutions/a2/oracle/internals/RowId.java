@@ -27,6 +27,7 @@ import java.util.Objects;
 public class RowId implements Serializable {
 
 	public static RowId ZERO = new RowId(0, 0, (short) 0);
+	public static int BYTES = 10;
 
 	private static final long serialVersionUID = 5763607360618681704L;
 	private static final int ROWID_SIZE = 18;
@@ -118,6 +119,32 @@ public class RowId implements Serializable {
 
 	/**
 	 * 
+	 * Creates ROWID object from it String presentation
+	 * 
+	 * @param rowIdAsString
+	 */
+	public RowId(final byte[] ba) {
+		if (ba.length != BYTES) {
+			throw new IllegalArgumentException("The array size must be 10 bytes!");
+		}
+		dataObj =
+				Byte.toUnsignedInt(ba[0]) << 24 |
+				Byte.toUnsignedInt(ba[1]) << 16 |
+				Byte.toUnsignedInt(ba[2]) <<  8 |
+				Byte.toUnsignedInt(ba[3]);
+		dataBlk =
+				Byte.toUnsignedInt(ba[4]) << 24 |
+				Byte.toUnsignedInt(ba[5]) << 16 |
+				Byte.toUnsignedInt(ba[6]) <<  8 |
+				Byte.toUnsignedInt(ba[7]);
+		afn = (short) (dataBlk >> 22);
+		rowNum = (short)(
+				Byte.toUnsignedInt(ba[8]) <<  8 |
+				Byte.toUnsignedInt(ba[9]));
+	}
+
+	/**
+	 * 
 	 * @return DATA_OBJECT_ID corresponding to this ROWID
 	 */
 	public int dataObj() {
@@ -146,6 +173,21 @@ public class RowId implements Serializable {
 	 */
 	public short rowNum() {
 		return rowNum;
+	}
+
+	public byte[] toByteArray() {
+		final byte[] ba = new byte[BYTES];
+		ba[0] = (byte) (dataObj    >> 24);
+		ba[1] = (byte) (dataObj    >> 16);
+		ba[2] = (byte) (dataObj    >>  8);
+		ba[3] = (byte) (dataObj);
+		ba[4] = (byte) (dataBlk    >> 24);
+		ba[5] = (byte) (dataBlk    >> 16);
+		ba[6] = (byte) (dataBlk    >>  8);
+		ba[7] = (byte) (dataBlk);
+		ba[8] = (byte) (rowNum >>  8);
+		ba[9] = (byte) (rowNum);
+		return ba;
 	}
 
 	@Override

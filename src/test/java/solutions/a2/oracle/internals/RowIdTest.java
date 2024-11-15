@@ -39,5 +39,8 @@ public class RowIdTest {
 
 		assertTrue(asString.equals(rowIdFromString.toString()));
 		assertTrue(asString.equals(rowIdFromObjBlkRow.toString()));
+
+		final byte[] ba = rowIdFromString.toByteArray();
+		assertEquals(new RowId(ba), rowIdFromObjBlkRow);
 	}
 }
