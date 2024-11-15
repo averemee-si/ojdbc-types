@@ -13,6 +13,7 @@
 package solutions.a2.oracle.internals;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,17 +31,27 @@ public class RbaTest {
 		final String withSpaces = " 0x003004.00414b19.0034 ";
 		final String noSpaces = "0x003004.00414b19.0034";
 
-		final RedoByteAddress rba1  = RedoByteAddress.fromLogmnrContentsRs_Id(withSpaces);
-		final RedoByteAddress rba2  = RedoByteAddress.fromLogmnrContentsRs_Id(noSpaces);
+		final RedoByteAddress rba1 = RedoByteAddress.fromLogmnrContentsRs_Id(withSpaces);
+		final RedoByteAddress rba2 = RedoByteAddress.fromLogmnrContentsRs_Id(noSpaces);
 		
 		assertEquals(rba1, rba2);
 		assertEquals(rba1.hashCode(), rba2.hashCode());
 
-		final RedoByteAddress rba3  = new RedoByteAddress(rba1.sqn(), rba1.blk(), rba1.offset());
+		final RedoByteAddress rba3 = new RedoByteAddress(rba1.sqn(), rba1.blk(), rba1.offset());
 		assertEquals(rba3, rba1);
 		assertEquals(rba3, rba2);
 		assertEquals(rba3.hashCode(), rba1.hashCode());
 		assertEquals(rba3.hashCode(), rba2.hashCode());
+
+		final byte[] ba = rba3.toByteArray();
+		assertEquals(ba.length, RedoByteAddress.BYTES);
+		assertEquals(rba3, RedoByteAddress.fromByteArray(ba));
+
+		final RedoByteAddress rba4 = RedoByteAddress.fromLogmnrContentsRs_Id(" 0x003004.011e54ee.00ac ");
+		assertTrue(rba1.compareTo(rba2) == 0);
+		assertTrue(rba2.compareTo(rba3) == 0);
+		assertTrue(rba3.compareTo(rba4) < 0);
+		assertTrue(rba4.compareTo(rba3) > 0);
 
 	}
 }

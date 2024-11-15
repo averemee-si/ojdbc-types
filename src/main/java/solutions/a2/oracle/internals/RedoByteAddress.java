@@ -26,6 +26,7 @@ public class RedoByteAddress implements Serializable, Comparable<RedoByteAddress
 
 	private static final long serialVersionUID = 5544465928920162041L;
 
+	public static final int BYTES = 10;
 	public static final RedoByteAddress MAX_VALUE = new RedoByteAddress(-1, -1, (short) -1);
 	public static final RedoByteAddress MIN_VALUE = new RedoByteAddress(0, 0, (short) 0);
 
@@ -48,8 +49,9 @@ public class RedoByteAddress implements Serializable, Comparable<RedoByteAddress
 
 
 	/**
+	 * Constructs new RedoByteAddress from String in format of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/refrn/V-LOGMNR_CONTENTS.html">V$LOGMNR_CONTENTS.RS_ID</a> column
 	 * 
-	 * @param rsId     Constructs new RedoByteAddress from String in format of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/refrn/V-LOGMNR_CONTENTS.html">V$LOGMNR_CONTENTS.RS_ID</a> column 
+	 * @param rsId     source string      
 	 * @return         RedoByteAddress
 	 */
 	public static RedoByteAddress fromLogmnrContentsRs_Id(String rsId) {
@@ -84,6 +86,33 @@ public class RedoByteAddress implements Serializable, Comparable<RedoByteAddress
 
 	/**
 	 * 
+	 * Constructs new RedoByteAddress from array of 10 bytes
+	 * 
+	 * @param ba  
+	 * @return         RedoByteAddress
+	 */
+	public static RedoByteAddress fromByteArray(final byte[] ba) {
+		if (ba.length != BYTES) {
+			throw new IllegalArgumentException("The array size must be 10 bytes!");
+		}
+		final int sqn =
+				Byte.toUnsignedInt(ba[0]) << 24 |
+				Byte.toUnsignedInt(ba[1]) << 16 |
+				Byte.toUnsignedInt(ba[2]) <<  8 |
+				Byte.toUnsignedInt(ba[3]);
+		final int blk =
+				Byte.toUnsignedInt(ba[4]) << 24 |
+				Byte.toUnsignedInt(ba[5]) << 16 |
+				Byte.toUnsignedInt(ba[6]) <<  8 |
+				Byte.toUnsignedInt(ba[7]);
+		final short offset = (short)(
+				Byte.toUnsignedInt(ba[8]) <<  8 |
+				Byte.toUnsignedInt(ba[9]));
+		return new RedoByteAddress(sqn, blk, offset);
+	}
+
+	/**
+	 * 
 	 * @return redo log file sequence number
 	 */
 	public int sqn() {
@@ -104,6 +133,25 @@ public class RedoByteAddress implements Serializable, Comparable<RedoByteAddress
 	 */
 	public short offset() {
 		return offset;
+	}
+
+	/**
+	 * 
+	 * @return byte array representation of this RBA
+	 */
+	public byte[] toByteArray() {
+		final byte[] ba = new byte[BYTES];
+		ba[0] = (byte) (sqn    >> 24);
+		ba[1] = (byte) (sqn    >> 16);
+		ba[2] = (byte) (sqn    >>  8);
+		ba[3] = (byte) (sqn);
+		ba[4] = (byte) (blk    >> 24);
+		ba[5] = (byte) (blk    >> 16);
+		ba[6] = (byte) (blk    >>  8);
+		ba[7] = (byte) (blk);
+		ba[8] = (byte) (offset >>  8);
+		ba[9] = (byte) (offset);
+		return ba;
 	}
 
 	@Override
