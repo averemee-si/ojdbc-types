@@ -121,7 +121,7 @@ public class RowId implements Serializable {
 	 * 
 	 * Creates ROWID object from it String presentation
 	 * 
-	 * @param rowIdAsString
+	 * @param ba
 	 */
 	public RowId(final byte[] ba) {
 		if (ba.length != BYTES) {
