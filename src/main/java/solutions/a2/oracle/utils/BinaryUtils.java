@@ -65,4 +65,82 @@ public interface BinaryUtils {
 			return new BinaryUtilsBigEndian();
 		}
 	}
+
+	/**
+	 * 
+	 * Returns the start position of the first occurrence of the specified {@code search} within
+	 * {@code array} starting from position {@code start}, or {@code -1} if there is no such occurrence.
+	 * 
+	 * @param array  the array to search for the sequence {@code search}
+	 * @param start  the position of {@code array} to start search
+	 * @param search the array to search for as a sub-sequence of {@code array}
+	 * @return
+	 */
+	public static int indexOf(byte[] array, int start, byte[] search) {
+		if (start >= array.length) {
+			return -1;
+		} else {
+			loop:
+			for (int index = start; index < array.length - search.length + 1; index++) {
+				for (int i = 0; i < search.length; i++) {
+					if (array[index + i] != search[i]) {
+						continue loop;
+					}
+				}
+				return index;
+			}
+			return -1;
+		}
+	}
+
+	/**
+	 * 
+	 * Returns the start position of the first occurrence of the specified {@code search} within
+	 * {@code array}, or {@code -1} if there is no such occurrence.
+	 * 
+	 * @param array  the array to search for the sequence {@code search}
+	 * @param search the array to search for as a sub-sequence of {@code array}
+	 */
+	public static int indexOf(byte[] array, byte[] search) {
+		return indexOf(array, 0, search);
+	}
+
+	/**
+	 * 
+	 * Returns the start position of the first occurrence of the specified {@code search} within
+	 * {@code array} starting from position {@code start}, or {@code -1} if there is no such occurrence.
+	 * 
+	 * @param array  the array to search for the sequence {@code search}
+	 * @param start  the position of {@code array} to start search
+	 * @param search the array to search for as a sub-sequence of {@code array}
+	 * @return
+	 */
+	public static int indexOf(byte[] array, int start, byte search) {
+		if (start >= array.length) {
+			return -1;
+		} else {
+			int index;
+			boolean found = false;
+			for (index = start; index < array.length; index++) {
+				if (array[index] == search) {
+					found = true;
+					break;
+				}
+			}
+			return found ? index : -1;
+		}
+	}
+
+	/**
+	 * 
+	 * Returns the start position of the first occurrence of the specified {@code search} within
+	 * {@code array}, or {@code -1} if there is no such occurrence.
+	 * 
+	 * @param array  the array to search for the sequence {@code search}
+	 * @param search the array to search for as a sub-sequence of {@code array}
+	 */
+	public static int indexOf(byte[] array, byte search) {
+		return indexOf(array, 0, search);
+	}
+
 }
