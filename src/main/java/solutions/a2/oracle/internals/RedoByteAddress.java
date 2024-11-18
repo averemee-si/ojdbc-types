@@ -54,7 +54,7 @@ public class RedoByteAddress implements Serializable, Comparable<RedoByteAddress
 	 * @param rsId     source string      
 	 * @return         RedoByteAddress
 	 */
-	public static RedoByteAddress fromLogmnrContentsRs_Id(String rsId) {
+	public static RedoByteAddress fromLogmnrContentsRs_Id(final String rsId) {
 		int pos = 0;
 		final StringBuilder sb = new StringBuilder();
 		while (pos < rsId.length() && rsId.charAt(pos) != 'x') {
@@ -81,6 +81,42 @@ public class RedoByteAddress implements Serializable, Comparable<RedoByteAddress
 		}
 		final int offset = Integer.parseUnsignedInt(sb.toString(), 0x10);
 		
+		return new RedoByteAddress(sequence, block, (short) offset);
+	}
+
+	/**
+	 * Constructs new RedoByteAddress from byte array in format of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/refrn/V-LOGMNR_CONTENTS.html">V$LOGMNR_CONTENTS.RS_ID</a> column
+	 * 
+	 * @param rsId     source string      
+	 * @return         RedoByteAddress
+	 */
+	public static RedoByteAddress fromLogmnrContentsRs_Id(final byte[] rsId) {
+		int pos = 0;
+		final StringBuilder sb = new StringBuilder();
+		while (pos < rsId.length && rsId[pos] != 'x') {
+			pos++;
+		}
+
+		pos++;
+		while (pos < rsId.length && rsId[pos] != '.') {
+			sb.append((char)rsId[pos++]);
+		}
+		final int sequence = Integer.parseUnsignedInt(sb.toString(), 0x10);
+
+		pos++;
+		sb.setLength(0);
+		while (pos < rsId.length && rsId[pos] != '.') {
+			sb.append((char)rsId[pos++]);
+		}
+		final int block = Integer.parseUnsignedInt(sb.toString(), 0x10);
+		
+		pos++;
+		sb.setLength(0);
+		while (pos < rsId.length && rsId[pos] != ' ') {
+			sb.append((char)rsId[pos++]);
+		}
+		final int offset = Integer.parseUnsignedInt(sb.toString(), 0x10);
+
 		return new RedoByteAddress(sequence, block, (short) offset);
 	}
 

@@ -15,6 +15,8 @@ package solutions.a2.oracle.internals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,6 +54,11 @@ public class RbaTest {
 		assertTrue(rba2.compareTo(rba3) == 0);
 		assertTrue(rba3.compareTo(rba4) < 0);
 		assertTrue(rba4.compareTo(rba3) > 0);
+
+		assertEquals(rba1, RedoByteAddress.fromLogmnrContentsRs_Id(rba1.toString().getBytes(StandardCharsets.US_ASCII)));
+		assertEquals(rba2, RedoByteAddress.fromLogmnrContentsRs_Id(rba2.toString().getBytes(StandardCharsets.US_ASCII)));
+		assertEquals(rba3, RedoByteAddress.fromLogmnrContentsRs_Id(rba3.toString().getBytes(StandardCharsets.US_ASCII)));
+		assertEquals(rba4, RedoByteAddress.fromLogmnrContentsRs_Id(rba4.toString().getBytes(StandardCharsets.US_ASCII)));
 
 	}
 }
