@@ -111,8 +111,12 @@ public class RowId implements Serializable {
 	 * @param rowNum
 	 */
 	public RowId(final int dataObj, final int dataBlk, final short rowNum) {
+		this(dataObj, dataBlk, (short) (dataBlk >> 22), rowNum);
+	}
+
+	private RowId(final int dataObj, final int dataBlk, final short afn, final short rowNum) {
 		this.dataObj = dataObj;
-		this.afn = (short) (dataBlk >> 22);
+		this.afn = afn;
 		this.dataBlk = dataBlk;
 		this.rowNum = rowNum;
 	}
@@ -141,6 +145,46 @@ public class RowId implements Serializable {
 		rowNum = (short)(
 				Byte.toUnsignedInt(ba[8]) <<  8 |
 				Byte.toUnsignedInt(ba[9]));
+	}
+
+	/**
+	 * Constructs new RowId from byte array in format of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/refrn/V-LOGMNR_CONTENTS.html">V$LOGMNR_CONTENTS.ROW_ID</a> column
+	 * 
+	 * @param rowId    source string      
+	 * @return         RowId
+	 */
+	public static RowId fromLogmnrContents(final byte[] rowId) {
+		if (rowId.length != ROWID_SIZE) {
+			throw new IllegalArgumentException("The length of the ROWID string representation must be 18 bytes!");
+		}
+
+		final int dataObj =
+				(fromBase64[rowId[ 0]]  << 30) |
+				(fromBase64[rowId[ 1]]  << 24) |
+				(fromBase64[rowId[ 2]]  << 18) |
+				(fromBase64[rowId[ 3]]  << 12) |
+				(fromBase64[rowId[ 4]]  <<  6) |
+				(fromBase64[rowId[ 5]]);
+
+		final short afn = (short) (
+				(fromBase64[rowId[ 6]]  << 12) |
+				(fromBase64[rowId[ 7]]  <<  6) |
+				(fromBase64[rowId[ 8]]) );
+
+		final int dataBlk =
+				(fromBase64[rowId[ 9]] << 30) |
+				(fromBase64[rowId[10]] << 24) |
+				(fromBase64[rowId[11]] << 18) |
+				(fromBase64[rowId[12]] << 12) |
+				(fromBase64[rowId[13]] <<  6) |
+				(fromBase64[rowId[14]])       |
+				((int)afn << 22);
+
+		final short rowNum = (short) (
+				(fromBase64[rowId[15]] << 12) |
+				(fromBase64[rowId[16]] <<  6) |
+				(fromBase64[rowId[17]]));
+		return new RowId(dataObj, dataBlk, afn, rowNum);
 	}
 
 	/**

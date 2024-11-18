@@ -15,6 +15,8 @@ package solutions.a2.oracle.internals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -28,7 +30,7 @@ public class RowIdTest {
 	@Test
 	public void test() {
 		final String asString = "AAAqvfABcAAEXtqAAN";
-		final RowId rowIdFromString = new RowId("AAAqvfABcAAEXtqAAN");
+		final RowId rowIdFromString = new RowId(asString);
 		final RowId rowIdFromObjBlkRow = new RowId(rowIdFromString.dataObj(), rowIdFromString.dataBlk(), rowIdFromString.rowNum());
 		
 		assertEquals(rowIdFromString.afn(), rowIdFromObjBlkRow.afn());
@@ -42,5 +44,9 @@ public class RowIdTest {
 
 		final byte[] ba = rowIdFromString.toByteArray();
 		assertEquals(new RowId(ba), rowIdFromObjBlkRow);
+
+		assertEquals(rowIdFromString, RowId.fromLogmnrContents(rowIdFromString.toString().getBytes(StandardCharsets.US_ASCII)));
+		assertEquals(rowIdFromObjBlkRow, RowId.fromLogmnrContents(rowIdFromObjBlkRow.toString().getBytes(StandardCharsets.US_ASCII)));
+
 	}
 }
