@@ -58,6 +58,10 @@ public class Xid implements Serializable {
 		return sqn;
 	}
 
+	public int partial() {
+		return (usn << 16) | slt;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder(24);
