@@ -1,3 +1,5 @@
+[![License](http://img.shields.io/:license-apache-blue.svg)](https://raw.githubusercontent.com/averemee-si/ojdbc-types/refs/heads/master/LICENSE)
+
 = Oracle JDBC Data Types Conversion
 
 == Introduction
