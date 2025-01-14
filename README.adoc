@@ -1,4 +1,5 @@
-[![License](http://img.shields.io/:license-apache-blue.svg)](https://raw.githubusercontent.com/averemee-si/ojdbc-types/refs/heads/master/LICENSE)
+image:https://img.shields.io/:license-apache-blue.svg[License,link=https://raw.githubusercontent.com/averemee-si/ojdbc-types/refs/heads/master/LICENSE]
+image:https://img.shields.io/maven-central/v/solutions.a2.oracle/ojdbc-types[link=https://search.maven.org/artifact/solutions.a2.oracle/ojdbc-types/0.8.5/jar?eh=]
 
 = Oracle JDBC Data Types Conversion
 
