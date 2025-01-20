@@ -14,7 +14,6 @@
 package solutions.a2.oracle.internals;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 import solutions.a2.oracle.utils.FormattingUtils;
 
@@ -76,7 +75,24 @@ public class Xid implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(usn, slt, sqn);
+		int hash = 0;
+		hash = hash * 0x1F  + (byte)(usn & 0x000F);
+		hash = hash * 0x1F  + (byte)(usn & 0x00F0);
+		hash = hash * 0x1F  + (byte)((usn >>> 8) & 0x000F);
+		hash = hash * 0x1F  + (byte)((usn >>> 8) & 0x00F0);
+		hash = hash * 0x1F  + (byte)(slt & 0x000F);
+		hash = hash * 0x1F  + (byte)(slt & 0x00F0);
+		hash = hash * 0x1F  + (byte)((slt >>> 8) & 0x000F);
+		hash = hash * 0x1F  + (byte)((slt >>> 8) & 0x00F0);
+		hash = hash * 0x1F  + (byte)(sqn & 0x000F);
+		hash = hash * 0x1F  + (byte)(sqn & 0x00F0);
+		hash = hash * 0x1F  + (byte)((sqn >>> 8) & 0x000F);
+		hash = hash * 0x1F  + (byte)((sqn >>> 8) & 0x00F0);
+		hash = hash * 0x1F  + (byte)((sqn >>> 16) & 0x000F);
+		hash = hash * 0x1F  + (byte)((sqn >>> 16) & 0x00F0);
+		hash = hash * 0x1F  + (byte)((sqn >>> 24) & 0x000F);
+		hash = hash * 0x1F  + (byte)((sqn >>> 24) & 0x00F0);		
+		return hash;
 	}
 
 	@Override
