@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import oracle.sql.TIMESTAMPTZ;
 
+import static solutions.a2.oracle.jdbc.types.TimestampWithTimeZone.DATA_LENGTH;
+
 /**
  *  
  * @author <a href="mailto:averemee@a2.solutions">Aleksei Veremeev</a>
@@ -33,6 +35,7 @@ import oracle.sql.TIMESTAMPTZ;
  */
 public class TimestampWithTimeZoneTest {
 
+	private static final int OFFSET = 2;
 
 	@Test
 	public void test() {
@@ -43,11 +46,13 @@ public class TimestampWithTimeZoneTest {
 			final Timestamp ts = Timestamp.from(zdt.toInstant());
 			System.out.println("Setting all TIMESTAMPTZ related information to " + zdt.toString());
 	
-			final byte[] byteArray = new byte[TimestampWithTimeZone.DATA_LENGTH];
+			final byte[] byteArray = new byte[DATA_LENGTH];
 			for (int i = 0; i < byteArray.length; i++) {
 				byteArray[i] = oraDate.getBytes()[i];
 			}
-			final int[] intArray = new int[TimestampWithTimeZone.DATA_LENGTH];
+			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET];
+			System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, DATA_LENGTH);
+			final int[] intArray = new int[DATA_LENGTH];
 			for (int i = 0; i < intArray.length; i++) {
 				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
 			}
@@ -59,11 +64,13 @@ public class TimestampWithTimeZoneTest {
 			assertTrue(zdt.isEqual(otByte.toZonedDateTime()));
 			assertTrue(zdt.isEqual(TimestampWithTimeZone.toZonedDateTime(intArray)));
 			assertTrue(zdt.isEqual(TimestampWithTimeZone.toZonedDateTime(byteArray)));
+			assertTrue(zdt.isEqual(TimestampWithTimeZone.toZonedDateTime(byteArrayWithOffset, OFFSET)));
 
 			assertTrue(ts.equals(otInt.toTimestamp()));
 			assertTrue(ts.equals(otByte.toTimestamp()));
 			assertTrue(ts.equals(TimestampWithTimeZone.toTimestamp(intArray)));
 			assertTrue(ts.equals(TimestampWithTimeZone.toTimestamp(byteArray)));
+			assertTrue(ts.equals(TimestampWithTimeZone.toTimestamp(byteArrayWithOffset, OFFSET)));
 
 			assertEquals(zdt.toString(), otInt.toString(), "Strings must be the same!");
 			assertEquals(zdt.toString(), otByte.toString(), "Strings must be the same!");
