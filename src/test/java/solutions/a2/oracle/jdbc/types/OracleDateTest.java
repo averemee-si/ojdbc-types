@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static solutions.a2.oracle.jdbc.types.OracleDate.DATA_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,6 +34,8 @@ import oracle.sql.DATE;
  */
 public class OracleDateTest {
 
+	private static final int OFFSET = 2;
+
 
 	@Test
 	public void test() {
@@ -44,11 +47,13 @@ public class OracleDateTest {
 			final DATE oraDate = new DATE(ts);
 			System.out.println("Setting all DATE related information to " + ldt.toString());
 	
-			final byte[] byteArray = new byte[OracleDate.DATA_LENGTH];
+			final byte[] byteArray = new byte[DATA_LENGTH];
 			for (int i = 0; i < byteArray.length; i++) {
 				byteArray[i] = oraDate.getBytes()[i];
 			}
-			final int[] intArray = new int[OracleDate.DATA_LENGTH];
+			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET];
+			System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, DATA_LENGTH);
+			final int[] intArray = new int[DATA_LENGTH];
 			for (int i = 0; i < intArray.length; i++) {
 				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
 			}
@@ -60,16 +65,19 @@ public class OracleDateTest {
 			assertTrue(ldt.isEqual(odByte.toLocalDateTime()));
 			assertTrue(ldt.isEqual(OracleDate.toLocalDateTime(intArray)));
 			assertTrue(ldt.isEqual(OracleDate.toLocalDateTime(byteArray)));
+			assertTrue(ldt.isEqual(OracleDate.toLocalDateTime(byteArrayWithOffset, OFFSET)));
 
 			assertTrue(ts.equals(odInt.toTimestamp()));
 			assertTrue(ts.equals(odByte.toTimestamp()));
 			assertTrue(ts.equals(OracleDate.toTimestamp(intArray)));
 			assertTrue(ts.equals(OracleDate.toTimestamp(byteArray)));
+			assertTrue(ts.equals(OracleDate.toTimestamp(byteArrayWithOffset, OFFSET)));
 			
 			assertTrue(oraDate.timestampValue().equals(odInt.toTimestamp()));
 			assertTrue(oraDate.timestampValue().equals(odByte.toTimestamp()));
 			assertTrue(oraDate.timestampValue().equals(OracleDate.toTimestamp(intArray)));
 			assertTrue(oraDate.timestampValue().equals(OracleDate.toTimestamp(byteArray)));
+			assertTrue(oraDate.timestampValue().equals(OracleDate.toTimestamp(byteArrayWithOffset, OFFSET)));
 
 			assertEquals(ldt.toString(), odInt.toString(), "Strings must be the same!");
 			assertEquals(ldt.toString(), odByte.toString(), "Strings must be the same!");

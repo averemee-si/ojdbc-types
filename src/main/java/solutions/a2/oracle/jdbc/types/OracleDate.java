@@ -87,6 +87,28 @@ public class OracleDate implements Serializable {
 	}
 
 	/**
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> to a {@link java.time.LocalDateTime LocalDateTime}
+	 * 
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
+	 * @return {@link java.time.LocalDateTime LocalDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
+	 * @throws SQLException if the byte array does not contains at least 7 values
+	 */
+	public static LocalDateTime toLocalDateTime(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for DATE in array with length = " + value.length);
+		}
+		return LocalDateTime.of(
+				(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
+						(Byte.toUnsignedInt(value[offset + 1]) - 100),	// 2nd byte year - 100
+				Byte.toUnsignedInt(value[offset + 2]),
+				Byte.toUnsignedInt(value[offset + 3]),
+				Byte.toUnsignedInt(value[offset + 4]) - 1,
+				Byte.toUnsignedInt(value[offset + 5]) - 1,
+				Byte.toUnsignedInt(value[offset + 6]) - 1);
+	}
+
+	/**
 	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> to a {@link java.time.LocalDateTime LocalDateTime}
 	 * 
 	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
@@ -123,12 +145,21 @@ public class OracleDate implements Serializable {
 	 * @throws SQLException if the int array does not contains at least 7 values
 	 */
 	public static Timestamp toTimestamp(final byte[] value) throws SQLException {
-		if (value.length < DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle DATE with length = " + value.length);
-		}
 		return Timestamp.valueOf(toLocalDateTime(value));
 	}
 
+
+	/**
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> to a {@link java.sql.Timestamp Timestamp}
+	 * 
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
+	 * @return {@link java.sql.Timestamp Timestamp} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> object
+	 * @throws SQLException if the int array does not contains at least 7 values
+	 */
+	public static Timestamp toTimestamp(final byte[] value, final int offset) throws SQLException {
+		return Timestamp.valueOf(toLocalDateTime(value, offset));
+	}
 	/**
 	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/DATE.html">DATE</a> to a {@link java.sql.Timestamp Timestamp}
 	 * 
