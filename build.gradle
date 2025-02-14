@@ -57,7 +57,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8
     testImplementation("com.oracle.database.jdbc:ojdbc8:$oracleJdbcVersion")
 
-    def jUnitVersion = "5.11.2"
+	def jUnitVersion = "5.11.4"
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jUnitVersion")
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
