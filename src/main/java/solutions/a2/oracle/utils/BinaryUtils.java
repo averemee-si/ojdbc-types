@@ -143,4 +143,56 @@ public interface BinaryUtils {
 		return indexOf(array, 0, search);
 	}
 
+	static final char[] HEX_CHARS_UPPER = new char[]
+			{0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46};
+
+	/**
+	 * 
+	 * Converts {@code hex} containing hexadecimal digits to a byte array.
+	 * 
+	 * @param hex
+	 * @return
+	 */
+	public static byte[] hexToRaw(final String hex) {
+		final int len = hex.length();
+		final byte[] data = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) +
+									Character.digit(hex.charAt(i+1), 16));
+		}
+		return data;
+	}
+
+	/**
+	 *
+	 * Converts {@code raw} to a character value containing its hexadecimal representation.
+	 * 
+	 * @param raw
+	 * @return
+	 */
+	public static String rawToHex(final byte[] raw) {
+		final char[] data = new char[raw.length * 2];
+		for (int i = 0; i < raw.length; i++) {
+			data[i << 1] = HEX_CHARS_UPPER[(raw[i] >> 4) & 0xF];
+			data[(i << 1) + 1] = HEX_CHARS_UPPER[(raw[i] & 0xF)];
+		}
+		return new String(data);
+	}
+
+	/**
+	 * 
+	 * Converts byte array to unsigned int
+	 * 
+	 * @param buffer
+	 * @param offset
+	 * @return
+	 */
+	public static int getU32BE(final byte[] buffer, final int offset) {
+		return
+				Byte.toUnsignedInt(buffer[offset])     << 24           |
+				Byte.toUnsignedInt(buffer[offset + 1]) << 16           |
+				Byte.toUnsignedInt(buffer[offset + 2]) << 8            |
+				Byte.toUnsignedInt(buffer[offset + 3]);
+	}
+
 }
