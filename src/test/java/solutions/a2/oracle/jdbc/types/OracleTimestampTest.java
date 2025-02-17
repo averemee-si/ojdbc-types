@@ -51,41 +51,28 @@ public class OracleTimestampTest {
 			for (int i = 0; i < byteArray.length; i++) {
 				byteArray[i] = oraDate.getBytes()[i];
 			}
-			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET];
+			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET * 2];
 			System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, DATA_LENGTH);
-			final int[] intArray = new int[DATA_LENGTH];
-			for (int i = 0; i < intArray.length; i++) {
-				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
-			}
 
-			final OracleTimestamp otInt = new OracleTimestamp(intArray);
 			final OracleTimestamp otByte = new OracleTimestamp(byteArray);
 
-			assertTrue(ldt.isEqual(otInt.toLocalDateTime()));
 			assertTrue(ldt.isEqual(otByte.toLocalDateTime()));
-			assertTrue(ldt.isEqual(OracleTimestamp.toLocalDateTime(intArray)));
 			assertTrue(ldt.isEqual(OracleTimestamp.toLocalDateTime(byteArray)));
-			assertTrue(ldt.isEqual(OracleTimestamp.toLocalDateTime(byteArrayWithOffset, OFFSET)));
+			assertTrue(ldt.isEqual(OracleTimestamp.toLocalDateTime(byteArrayWithOffset, OFFSET, DATA_LENGTH)));
 
-			assertTrue(ts.equals(otInt.toTimestamp()));
 			assertTrue(ts.equals(otByte.toTimestamp()));
-			assertTrue(ts.equals(OracleTimestamp.toTimestamp(intArray)));
 			assertTrue(ts.equals(OracleTimestamp.toTimestamp(byteArray)));
-			assertTrue(ts.equals(OracleTimestamp.toTimestamp(byteArrayWithOffset, OFFSET)));
+			assertTrue(ts.equals(OracleTimestamp.toTimestamp(byteArrayWithOffset, OFFSET, DATA_LENGTH)));
 			
-			assertTrue(oraDate.timestampValue().equals(otInt.toTimestamp()));
 			assertTrue(oraDate.timestampValue().equals(otByte.toTimestamp()));
-			assertTrue(oraDate.timestampValue().equals(OracleTimestamp.toTimestamp(intArray)));
 			assertTrue(oraDate.timestampValue().equals(OracleTimestamp.toTimestamp(byteArray)));
-			assertTrue(oraDate.timestampValue().equals(OracleTimestamp.toTimestamp(byteArrayWithOffset, OFFSET)));
+			assertTrue(oraDate.timestampValue().equals(OracleTimestamp.toTimestamp(byteArrayWithOffset, OFFSET, DATA_LENGTH)));
 
-			assertEquals(ldt.toString(), otInt.toString(), "Strings must be the same!");
 			assertEquals(ldt.toString(), otByte.toString(), "Strings must be the same!");
-			assertEquals(ldt.toString(), OracleTimestamp.toString(intArray), "Strings must be the same!");
 			assertEquals(ldt.toString(), OracleTimestamp.toString(byteArray), "Strings must be the same!");
 
-			assertTrue(zdt.isEqual(OracleTimestamp.toZonedDateTime(intArray, zoneId)));
 			assertTrue(zdt.isEqual(OracleTimestamp.toZonedDateTime(byteArray, zoneId)));
+			assertTrue(zdt.isEqual(OracleTimestamp.toZonedDateTime(byteArrayWithOffset, OFFSET, DATA_LENGTH, zoneId)));
 
 		} catch (SQLException e) {
 			e.printStackTrace();

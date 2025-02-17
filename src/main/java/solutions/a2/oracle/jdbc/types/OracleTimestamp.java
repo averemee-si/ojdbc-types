@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import static solutions.a2.oracle.utils.BinaryUtils.getU32BE;
 
 /**
  * Oracle <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to Java Classes Conversions
@@ -34,6 +35,7 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * Oracle Type 180 length
 	 */
 	public static final int DATA_LENGTH = 11;
+	public static final int DATA_LENGTH_NOFRACTION = OracleDate.DATA_LENGTH;
 
 
 	/**
@@ -47,16 +49,6 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	}
 
 	/**
-	 * Creates OracleTimestamp from a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a>
-	 * 
-	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
-	 */
-	public OracleTimestamp(final int[] value) throws SQLException {
-		ldt = toLocalDateTime(value);
-	}
-
-	/**
 	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.LocalDateTime LocalDateTime}
 	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
@@ -64,19 +56,7 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
 	public static LocalDateTime toLocalDateTime(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
-		}
-		return LocalDateTime
-				.of(
-					(Byte.toUnsignedInt(value[0]) - 100) *100 +		// 1st byte century - 100
-						(Byte.toUnsignedInt(value[1]) - 100),		// 2nd byte year - 100
-					Byte.toUnsignedInt(value[2]),
-					Byte.toUnsignedInt(value[3]),
-					Byte.toUnsignedInt(value[4]) - 1,
-					Byte.toUnsignedInt(value[5]) - 1,
-					Byte.toUnsignedInt(value[6]) - 1,
-					RawDataUtilities.decodeOraBytes(value, 7));
+		return toLocalDateTime(value, 0, value.length);
 	}
 
 	/**
@@ -84,46 +64,37 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
 	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param length - the number of bytes representing oracle.sql.TIMESTAMP
 	 * @return {@link java.time.LocalDateTime LocalDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
-	public static LocalDateTime toLocalDateTime(final byte[] value, final int offset) throws SQLException {
-		if (offset + DATA_LENGTH > value.length) {
-			throw new SQLException("Not enough data for TIMESTAMP in array with length = " + value.length);
-		}
-		return LocalDateTime
-				.of(
-					(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
-						(Byte.toUnsignedInt(value[offset + 1]) - 100),		// 2nd byte year - 100
-					Byte.toUnsignedInt(value[offset + 2]),
-					Byte.toUnsignedInt(value[offset + 3]),
-					Byte.toUnsignedInt(value[offset + 4]) - 1,
-					Byte.toUnsignedInt(value[offset + 5]) - 1,
-					Byte.toUnsignedInt(value[offset + 6]) - 1,
-					RawDataUtilities.decodeOraBytes(value, offset + 7));
-	}
-
-	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.LocalDateTime LocalDateTime}
-	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
-	 * @return {@link java.time.LocalDateTime LocalDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
-	 */
-	public static LocalDateTime toLocalDateTime(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
+	public static LocalDateTime toLocalDateTime(final byte[] value, final int offset, final int length) throws SQLException {
+		if (offset + length > value.length) {
+			throw new SQLException("Not enough data to convert in array with length " + value.length);
+		} else if (length == DATA_LENGTH_NOFRACTION) {
+			return LocalDateTime
+					.of(
+						(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
+							(Byte.toUnsignedInt(value[offset + 1]) - 100),		// 2nd byte year - 100
+						Byte.toUnsignedInt(value[offset + 2]),
+						Byte.toUnsignedInt(value[offset + 3]),
+						Byte.toUnsignedInt(value[offset + 4]) - 1,
+						Byte.toUnsignedInt(value[offset + 5]) - 1,
+						Byte.toUnsignedInt(value[offset + 6]) - 1);
+		} else if (length == DATA_LENGTH) {
+			return LocalDateTime
+					.of(
+						(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
+							(Byte.toUnsignedInt(value[offset + 1]) - 100),		// 2nd byte year - 100
+						Byte.toUnsignedInt(value[offset + 2]),
+						Byte.toUnsignedInt(value[offset + 3]),
+						Byte.toUnsignedInt(value[offset + 4]) - 1,
+						Byte.toUnsignedInt(value[offset + 5]) - 1,
+						Byte.toUnsignedInt(value[offset + 6]) - 1,
+						getU32BE(value, offset + 7));
+		} else {
 			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
 		}
-		return LocalDateTime
-				.of(
-					(value[0] - 100) *100 +		// 1st byte century - 100
-						(value[1] - 100),	// 2nd byte year - 100
-					value[2],
-					value[3],
-					value[4] - 1,
-					value[5] - 1,
-					value[6] - 1,
-					RawDataUtilities.decodeOraBytes(value, 7));
 	}
 
 	/**
@@ -136,45 +107,49 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
 	public static ZonedDateTime toZonedDateTime(final byte[] value, final ZoneId zoneId) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
-		}
-		return ZonedDateTime
-				.of(
-					(Byte.toUnsignedInt(value[0]) - 100) *100 +		// 1st byte century - 100
-						(Byte.toUnsignedInt(value[1]) - 100),		// 2nd byte year - 100
-					Byte.toUnsignedInt(value[2]),
-					Byte.toUnsignedInt(value[3]),
-					Byte.toUnsignedInt(value[4]) - 1,
-					Byte.toUnsignedInt(value[5]) - 1,
-					Byte.toUnsignedInt(value[6]) - 1,
-					RawDataUtilities.decodeOraBytes(value, 7),
-					zoneId);
+		return toZonedDateTime(value, 0, value.length, zoneId);
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.ZonedDateTime ZonedDateTime}
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.time.ZonedDateTime ZonedDateTime}
 	 * 
 	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param length - the number of bytes representing oracle.sql.TIMESTAMP
 	 * @param zoneId timezone
 	 * @return {@link java.time.ZonedDateTime ZonedDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
 	 * @throws SQLException if the int array does not contain exactly 11 values
 	 */
-	public static ZonedDateTime toZonedDateTime(final int[] value, final ZoneId zoneId) throws SQLException {
-		if (value.length != DATA_LENGTH) {
+	public static ZonedDateTime toZonedDateTime(final byte[] value, final int offset, final int length, final ZoneId zoneId) throws SQLException {
+		if (offset + length > value.length) {
+			throw new SQLException("Not enough data to convert in array with length " + value.length);
+		} else if (length == DATA_LENGTH_NOFRACTION) {
+			return ZonedDateTime
+					.of(
+						(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
+							(Byte.toUnsignedInt(value[offset + 1]) - 100),		// 2nd byte year - 100
+						Byte.toUnsignedInt(value[offset + 2]),
+						Byte.toUnsignedInt(value[offset + 3]),
+						Byte.toUnsignedInt(value[offset + 4]) - 1,
+						Byte.toUnsignedInt(value[offset + 5]) - 1,
+						Byte.toUnsignedInt(value[offset + 6]) - 1,
+						0,
+						zoneId);
+		} else if (length == DATA_LENGTH) {
+			return ZonedDateTime
+					.of(
+						(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
+							(Byte.toUnsignedInt(value[offset + 1]) - 100),		// 2nd byte year - 100
+						Byte.toUnsignedInt(value[offset + 2]),
+						Byte.toUnsignedInt(value[offset + 3]),
+						Byte.toUnsignedInt(value[offset + 4]) - 1,
+						Byte.toUnsignedInt(value[offset + 5]) - 1,
+						Byte.toUnsignedInt(value[offset + 6]) - 1,
+						getU32BE(value, offset + 7),
+						zoneId);
+		} else {
 			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
 		}
-		return ZonedDateTime
-				.of(
-					(value[0] - 100) *100 +		// 1st byte century - 100
-						(value[1] - 100),		// 2nd byte year - 100
-					value[2],
-					value[3],
-					value[4] - 1,
-					value[5] - 1,
-					value[6] - 1,
-					RawDataUtilities.decodeOraBytes(value, 7),
-					zoneId);
 	}
 
 	/**
@@ -185,7 +160,7 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * @throws SQLException if the int array does not contain exactly 11 values
 	 */
 	public static Timestamp toTimestamp(final byte[] value) throws SQLException {
-		return Timestamp.valueOf(toLocalDateTime(value));
+		return Timestamp.valueOf(toLocalDateTime(value, 0, value.length));
 	}
 
 	/**
@@ -193,25 +168,12 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
 	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param length - the number of bytes representing oracle.sql.TIMESTAMP
 	 * @return {@link java.sql.Timestamp Timestamp} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
 	 * @throws SQLException if the int array does not contain exactly 11 values
 	 */
-	public static Timestamp toTimestamp(final byte[] value, final int offset) throws SQLException {
-		return Timestamp.valueOf(toLocalDateTime(value, offset));
-	}
-
-	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a {@link java.sql.Timestamp Timestamp}
-	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
-	 * @return {@link java.sql.Timestamp Timestamp} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
-	 */
-	public static Timestamp toTimestamp(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
-		}
-		return Timestamp.valueOf(toLocalDateTime(value));
+	public static Timestamp toTimestamp(final byte[] value, final int offset, final int length) throws SQLException {
+		return Timestamp.valueOf(toLocalDateTime(value, offset, length));
 	}
 
 	/**
@@ -222,24 +184,21 @@ public class OracleTimestamp extends OracleDate implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
 	public static String toString(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
-		}
-		return toLocalDateTime(value).toString();
+		return toLocalDateTime(value, 0, value.length).toString();
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations">ISO-8601</a> format
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations">ISO-8601</a> format
 	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
+	 * @param length - the number of bytes representing oracle.sql.TIMESTAMP
 	 * @return String representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMP.html">TIMESTAMP</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
+	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
-	public static String toString(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMP with length = " + value.length);
-		}
-		return toLocalDateTime(value).toString();
+	public static String toString(final byte[] value, final int offset, final int length) throws SQLException {
+		return toLocalDateTime(value, offset, length).toString();
 	}
+
 
 }
