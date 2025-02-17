@@ -51,37 +51,24 @@ public class OracleDateTest {
 			for (int i = 0; i < byteArray.length; i++) {
 				byteArray[i] = oraDate.getBytes()[i];
 			}
-			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET];
+			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET * 2];
 			System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, DATA_LENGTH);
-			final int[] intArray = new int[DATA_LENGTH];
-			for (int i = 0; i < intArray.length; i++) {
-				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
-			}
 
-			final OracleDate odInt = new OracleDate(intArray);
 			final OracleDate odByte = new OracleDate(byteArray);
 
-			assertTrue(ldt.isEqual(odInt.toLocalDateTime()));
 			assertTrue(ldt.isEqual(odByte.toLocalDateTime()));
-			assertTrue(ldt.isEqual(OracleDate.toLocalDateTime(intArray)));
 			assertTrue(ldt.isEqual(OracleDate.toLocalDateTime(byteArray)));
 			assertTrue(ldt.isEqual(OracleDate.toLocalDateTime(byteArrayWithOffset, OFFSET)));
 
-			assertTrue(ts.equals(odInt.toTimestamp()));
 			assertTrue(ts.equals(odByte.toTimestamp()));
-			assertTrue(ts.equals(OracleDate.toTimestamp(intArray)));
 			assertTrue(ts.equals(OracleDate.toTimestamp(byteArray)));
 			assertTrue(ts.equals(OracleDate.toTimestamp(byteArrayWithOffset, OFFSET)));
 			
-			assertTrue(oraDate.timestampValue().equals(odInt.toTimestamp()));
 			assertTrue(oraDate.timestampValue().equals(odByte.toTimestamp()));
-			assertTrue(oraDate.timestampValue().equals(OracleDate.toTimestamp(intArray)));
 			assertTrue(oraDate.timestampValue().equals(OracleDate.toTimestamp(byteArray)));
 			assertTrue(oraDate.timestampValue().equals(OracleDate.toTimestamp(byteArrayWithOffset, OFFSET)));
 
-			assertEquals(ldt.toString(), odInt.toString(), "Strings must be the same!");
 			assertEquals(ldt.toString(), odByte.toString(), "Strings must be the same!");
-			assertEquals(ldt.toString(), OracleDate.toString(intArray), "Strings must be the same!");
 			assertEquals(ldt.toString(), OracleDate.toString(byteArray), "Strings must be the same!");
 
 		} catch (SQLException e) {
