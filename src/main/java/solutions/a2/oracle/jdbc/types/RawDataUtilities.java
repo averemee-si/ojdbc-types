@@ -13,15 +13,11 @@
 
 package solutions.a2.oracle.jdbc.types;
 
+import static solutions.a2.oracle.utils.BinaryUtils.getU32BE;
+
 class RawDataUtilities {
 
 	static final int ORA_INTERVAL_OFFSET = 60;
-
-	static int decodeOraBytes(final byte[] array, final int msb) {
-		return
-			Byte.toUnsignedInt(array[msb + 3]) | Byte.toUnsignedInt(array[msb + 2]) << 8 |
-			Byte.toUnsignedInt(array[msb + 1]) << 16 | Byte.toUnsignedInt(array[msb]) << 24;
-	}
 
 	static int decodeOraBytes(final int[] array, final int msb) {
 		return
@@ -29,27 +25,11 @@ class RawDataUtilities {
 	}
 
 	static int decodeOraBytes4I(final byte[] array, final int msb) {
-		return -(Integer.MIN_VALUE - decodeOraBytes(array, msb));
+		return -(Integer.MIN_VALUE - getU32BE(array, msb));
 	}
 
 	static int decodeOraBytes4I(final int[] array, final int msb) {
 		return -(Integer.MIN_VALUE - decodeOraBytes(array, msb));
-	}
-
-	static int getHighOrderBits(final int value) {
-		return (value & 0x7F) << 6;
-	}
-
-	static int getLowOrderBits(final int value) {
-		return (value & 0xFC) >> 2;
-	}
-
-	static int setHighOrderBits(final int value) {
-		return (value & 0x1FC0) >> 6;
-	}
-
-	static int setLowOrderBits(final int value) {
-		return (value & 0x3F) << 2;
 	}
 
 }

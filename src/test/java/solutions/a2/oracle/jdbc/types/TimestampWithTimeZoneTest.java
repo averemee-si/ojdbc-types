@@ -50,37 +50,25 @@ public class TimestampWithTimeZoneTest {
 			for (int i = 0; i < byteArray.length; i++) {
 				byteArray[i] = oraDate.getBytes()[i];
 			}
-			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET];
+			final byte[] byteArrayWithOffset = new byte[DATA_LENGTH + OFFSET * 3];
 			System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, DATA_LENGTH);
-			final int[] intArray = new int[DATA_LENGTH];
-			for (int i = 0; i < intArray.length; i++) {
-				intArray[i] = Byte.toUnsignedInt(byteArray[i]);
-			}
 
-			final TimestampWithTimeZone otInt = new TimestampWithTimeZone(intArray);
 			final TimestampWithTimeZone otByte = new TimestampWithTimeZone(byteArray);
 
-			assertTrue(zdt.isEqual(otInt.toZonedDateTime()));
 			assertTrue(zdt.isEqual(otByte.toZonedDateTime()));
-			assertTrue(zdt.isEqual(TimestampWithTimeZone.toZonedDateTime(intArray)));
 			assertTrue(zdt.isEqual(TimestampWithTimeZone.toZonedDateTime(byteArray)));
 			assertTrue(zdt.isEqual(TimestampWithTimeZone.toZonedDateTime(byteArrayWithOffset, OFFSET)));
 
-			assertTrue(ts.equals(otInt.toTimestamp()));
 			assertTrue(ts.equals(otByte.toTimestamp()));
-			assertTrue(ts.equals(TimestampWithTimeZone.toTimestamp(intArray)));
 			assertTrue(ts.equals(TimestampWithTimeZone.toTimestamp(byteArray)));
 			assertTrue(ts.equals(TimestampWithTimeZone.toTimestamp(byteArrayWithOffset, OFFSET)));
 
-			assertEquals(zdt.toString(), otInt.toString(), "Strings must be the same!");
 			assertEquals(zdt.toString(), otByte.toString(), "Strings must be the same!");
-			assertEquals(zdt.toString(), TimestampWithTimeZone.toString(intArray), "Strings must be the same!");
 			assertEquals(zdt.toString(), TimestampWithTimeZone.toString(byteArray), "Strings must be the same!");
 
-			assertTrue(odt.isEqual(otInt.toOffsetDateTime()));
 			assertTrue(odt.isEqual(otByte.toOffsetDateTime()));
-			assertTrue(odt.isEqual(TimestampWithTimeZone.toOffsetDateTime(intArray)));
 			assertTrue(odt.isEqual(TimestampWithTimeZone.toOffsetDateTime(byteArray)));
+			assertTrue(odt.isEqual(TimestampWithTimeZone.toOffsetDateTime(byteArrayWithOffset, OFFSET)));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Exception " + e.getMessage());

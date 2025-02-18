@@ -23,6 +23,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRules;
 
+import static solutions.a2.oracle.utils.BinaryUtils.getU32BE;
+
 
 /**
  * Oracle <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to Java Classes Conversions
@@ -54,16 +56,6 @@ public class TimestampWithTimeZone implements Serializable {
 	}
 
 	/**
-	 * Creates TimestampWithTimeZone from a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a>
-	 * 
-	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
-	 */
-	public TimestampWithTimeZone(final int[] value) throws SQLException {
-		zdt = toZonedDateTime(value);
-	}
-
-	/**
 	 * ZonedDateTime representation of TimestampWithTimeZone
 	 * 
 	 * @return {@link java.time.ZonedDateTime ZonedDateTime} representation of TimestampWithTimeZone
@@ -80,24 +72,7 @@ public class TimestampWithTimeZone implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 13 values
 	 */
 	public static ZonedDateTime toZonedDateTime(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMPTZ with length = " + value.length);
-		}
-        final ZonedDateTime zdt = ZonedDateTime
-				.of(
-						(Byte.toUnsignedInt(value[0]) - 100) *100 +		// 1st byte century - 100
-							(Byte.toUnsignedInt(value[1]) - 100),		// 2nd byte year - 100
-						Byte.toUnsignedInt(value[2]),
-						Byte.toUnsignedInt(value[3]),
-						Byte.toUnsignedInt(value[4]) - 1,
-						Byte.toUnsignedInt(value[5]) - 1,
-						Byte.toUnsignedInt(value[6]) - 1,
-						RawDataUtilities.decodeOraBytes(value, 7),
-						UTC_ZONE_ID);
-
-		return zdt.withZoneSameInstant(getZoneId(
-							Byte.toUnsignedInt(value[11]),
-							Byte.toUnsignedInt(value[12])));
+		return toZonedDateTime(value, 0);
 	}
 
 	/**
@@ -121,37 +96,12 @@ public class TimestampWithTimeZone implements Serializable {
 						Byte.toUnsignedInt(value[offset + 4]) - 1,
 						Byte.toUnsignedInt(value[offset + 5]) - 1,
 						Byte.toUnsignedInt(value[offset + 6]) - 1,
-						RawDataUtilities.decodeOraBytes(value, offset + 7),
+						getU32BE(value, offset + 7),
 						UTC_ZONE_ID);
 
 		return zdt.withZoneSameInstant(getZoneId(
 							Byte.toUnsignedInt(value[offset + 11]),
 							Byte.toUnsignedInt(value[offset + 12])));
-	}
-
-	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to a {@link java.time.ZonedDateTime ZonedDateTime}
-	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
-	 * @return {@link java.time.ZonedDateTime ZonedDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
-	 * @throws SQLException if the int array does not contain exactly 13 values
-	 */
-	public static ZonedDateTime toZonedDateTime(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMPTZ with length = " + value.length);
-		}
-        final ZonedDateTime zdt = ZonedDateTime
-				.of(
-					(value[0] - 100) *100 +		// 1st byte century - 100
-						(value[1] - 100),		// 2nd byte year - 100
-					value[2],
-					value[3],
-					value[4] - 1,
-					value[5] - 1,
-					value[6] - 1,
-					RawDataUtilities.decodeOraBytes(value, 7),
-					UTC_ZONE_ID);
-        return zdt.withZoneSameInstant(getZoneId(value[11], value[12]));
 	}
 
 	/**
@@ -171,50 +121,36 @@ public class TimestampWithTimeZone implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 13 values
 	 */
 	public static OffsetDateTime toOffsetDateTime(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMPTZ with length = " + value.length);
-		}
-        final OffsetDateTime odt = OffsetDateTime
-				.of(
-						(Byte.toUnsignedInt(value[0]) - 100) *100 +		// 1st byte century - 100
-							(Byte.toUnsignedInt(value[1]) - 100),		// 2nd byte year - 100
-						Byte.toUnsignedInt(value[2]),
-						Byte.toUnsignedInt(value[3]),
-						Byte.toUnsignedInt(value[4]) - 1,
-						Byte.toUnsignedInt(value[5]) - 1,
-						Byte.toUnsignedInt(value[6]) - 1,
-						RawDataUtilities.decodeOraBytes(value, 7),
-						ZoneOffset.UTC);
-		return odt.withOffsetSameInstant(getZoneOffset(
-							Byte.toUnsignedInt(value[11]),
-							Byte.toUnsignedInt(value[12]),
-							odt.toInstant()));
+		return toOffsetDateTime(value, 0);
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to a {@link java.time.OffsetDateTime OffsetDateTime}
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to a {@link java.time.OffsetDateTime OffsetDateTime}
 	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
 	 * @return {@link java.time.OffsetDateTime OffsetDateTime} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
 	 * @throws SQLException if the byte array does not contain exactly 13 values
 	 */
-	public static OffsetDateTime toOffsetDateTime(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMPTZ with length = " + value.length);
+	public static OffsetDateTime toOffsetDateTime(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for TIMESTAMPTZ in array with length = " + value.length);
 		}
         final OffsetDateTime odt = OffsetDateTime
 				.of(
-					(value[0] - 100) *100 +		// 1st byte century - 100
-						(value[1] - 100),		// 2nd byte year - 100
-					value[2],
-					value[3],
-					value[4] - 1,
-					value[5] - 1,
-					value[6] - 1,
-					RawDataUtilities.decodeOraBytes(value, 7),
-					ZoneOffset.UTC);
+						(Byte.toUnsignedInt(value[offset]) - 100) *100 +		// 1st byte century - 100
+							(Byte.toUnsignedInt(value[offset + 1]) - 100),		// 2nd byte year - 100
+						Byte.toUnsignedInt(value[offset + 2]),
+						Byte.toUnsignedInt(value[offset + 3]),
+						Byte.toUnsignedInt(value[offset + 4]) - 1,
+						Byte.toUnsignedInt(value[offset + 5]) - 1,
+						Byte.toUnsignedInt(value[offset + 6]) - 1,
+						getU32BE(value, offset + 7),
+						ZoneOffset.UTC);
 		return odt.withOffsetSameInstant(getZoneOffset(
-							value[11], value[12], odt.toInstant()));
+							Byte.toUnsignedInt(value[offset + 11]),
+							Byte.toUnsignedInt(value[offset + 12]),
+							odt.toInstant()));
 	}
 
 	/**
@@ -248,20 +184,6 @@ public class TimestampWithTimeZone implements Serializable {
 		return Timestamp.from(toZonedDateTime(value, offset).toInstant());
 	}
 
-	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to a {@link java.sql.Timestamp Timestamp}
-	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
-	 * @return {@link java.sql.Timestamp Timestamp} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
-	 * @throws SQLException if the int array does not contain exactly 13 values
-	 */
-	public static Timestamp toTimestamp(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMPTZ with length = " + value.length);
-		}
-		return Timestamp.from(toZonedDateTime(value).toInstant());
-	}
-
 	@Override
 	public String toString() {
 		return zdt.toString();
@@ -282,17 +204,15 @@ public class TimestampWithTimeZone implements Serializable {
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations">ISO-8601</a> format
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations">ISO-8601</a> format
 	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
 	 * @return String representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
-	 * @throws SQLException if the int array does not contain exactly 13 values
+	 * @throws SQLException if the byte array does not contain exactly 13 values
 	 */
-	public static String toString(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle TIMESTAMPTZ with length = " + value.length);
-		}
-		return toZonedDateTime(value).toString();
+	public static String toString(final byte[] value, final int offset) throws SQLException {
+		return toZonedDateTime(value, offset).toString();
 	}
 
 	private static ZoneId getZoneId(final int byte11, final int byte12) throws SQLException {
@@ -304,8 +224,8 @@ public class TimestampWithTimeZone implements Serializable {
 			zoneId = ZoneId.of(offset.toString());
 		} else {
 			final int zoneNumericId = 
-					RawDataUtilities.getHighOrderBits(byte11) + 
-					RawDataUtilities.getLowOrderBits(byte12);
+					getHighOrderBits(byte11) + 
+					getLowOrderBits(byte12);
 			final String zoneName = TimeZoneMap.getName(zoneNumericId);
 			if (zoneName == null) {
 				throw new SQLException("Unable to find timezone name for ID=" + zoneNumericId);
@@ -323,8 +243,8 @@ public class TimestampWithTimeZone implements Serializable {
 					byte12 - TS_OFFSET_MINUTE);
 		} else {
 			final int zoneNumericId = 
-					RawDataUtilities.getHighOrderBits(byte11) + 
-					RawDataUtilities.getLowOrderBits(byte12);
+					getHighOrderBits(byte11) + 
+					getLowOrderBits(byte12);
 			final String zoneName = TimeZoneMap.getName(zoneNumericId);
 			if (zoneName == null) {
 				throw new SQLException("Unable to find timezone name for ID=" + zoneNumericId);
@@ -333,6 +253,22 @@ public class TimestampWithTimeZone implements Serializable {
 			zoneOffset = rules.getOffset(instant);
 		}
 		return zoneOffset;
+	}
+
+	private static int getHighOrderBits(final int value) {
+		return (value & 0x7F) << 6;
+	}
+
+	private static int getLowOrderBits(final int value) {
+		return (value & 0xFC) >> 2;
+	}
+
+	static int setHighOrderBits(final int value) {
+		return (value & 0x1FC0) >> 6;
+	}
+
+	static int setLowOrderBits(final int value) {
+		return (value & 0x3F) << 2;
 	}
 
 }
