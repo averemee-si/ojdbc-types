@@ -23,7 +23,7 @@ import java.time.Period;
  * 
  * Oracle Type 182
  */
-public class IntervalYearToMonth implements Serializable {
+public class IntervalYearToMonth extends Interval implements Serializable {
 
 	private static final long serialVersionUID = -4521533224944486365L;
 
@@ -48,26 +48,24 @@ public class IntervalYearToMonth implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 5 values
 	 */
 	public IntervalYearToMonth(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
-		}
-		years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		months = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		this(value, 0);
 	}
 
 	/**
-	 * Creates IntervalYearToMonth from a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a>
+	 * Creates IntervalYearToMonth from a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a>
 	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
-	 * @throws SQLException if the int array does not contain exactly 5 values
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
+	 * @throws SQLException if the byte array does not contain exactly 5 values
 	 */
-	public IntervalYearToMonth(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
+	public IntervalYearToMonth(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for Oracle INTERVALYM in array with length = " + value.length);
 		}
-		years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		months = value[4] - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		years = decodeOraBytes(value, offset);
+		months = Byte.toUnsignedInt(value[offset + 4]) - ORA_INTERVAL_OFFSET;
 	}
+
 
 	/**
 	 * Number of years
@@ -107,26 +105,28 @@ public class IntervalYearToMonth implements Serializable {
 		if (value.length != DATA_LENGTH) {
 			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
 		}
-		final int years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int months = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int years = decodeOraBytes(value, 0);
+		final int months = Byte.toUnsignedInt(value[4]) - ORA_INTERVAL_OFFSET;
 		return toPeriod(years, months);
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> to a {@link java.time.Period  Period}
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> to a {@link java.time.Period Period}
 	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
 	 * @return {@link java.time.Period  Period} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
-	 * @throws SQLException if the int array does not contain exactly 5 values
+	 * @throws SQLException if the byte array does not contain exactly 5 values
 	 */
-	public static Period toPeriod(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
+	public static Period toPeriod(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for Oracle INTERVALYM in array with length = " + value.length);
 		}
-		final int years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int months = value[4] - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int years = decodeOraBytes(value, offset);
+		final int months = Byte.toUnsignedInt(value[offset + 4]) - ORA_INTERVAL_OFFSET;
 		return toPeriod(years, months);
 	}
+
 
 	private static Period toPeriod(final int years, final int months) {
 		return Period.of(years, months, 0);
@@ -148,26 +148,11 @@ public class IntervalYearToMonth implements Serializable {
 		if (value.length != DATA_LENGTH) {
 			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
 		}
-		final int years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int months = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
+		final int years = decodeOraBytes(value, 0);
+		final int months = Byte.toUnsignedInt(value[4]) - ORA_INTERVAL_OFFSET;
 		return toString(years, months);
 	}
 
-	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">ISO-8601</a> format
-	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
-	 * @return String representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
-	 * @throws SQLException if the int array does not contain exactly 5 values
-	 */
-	public static String toString(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALYM with length = " + value.length);
-		}
-		final int years = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int months = value[4] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		return toString(years, months);
-	}
 
 	private static String toString(final int years, final int months) {
 		final StringBuilder sb = new StringBuilder();

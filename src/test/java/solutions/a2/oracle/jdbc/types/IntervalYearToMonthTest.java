@@ -33,22 +33,19 @@ public class IntervalYearToMonthTest {
 
 	private static final int YEARS = 3;
 	private static final int MONTHS = 7;
+	private final static int OFFSET = 7;
 
 	@Test
 	public void test() {
 		// Period of 3 years and 7 months...
-		// As int array
-		final int[] intArray = new int[IntervalYearToMonth.DATA_LENGTH];
-		intArray[0] = 128;
-		intArray[1] = 0;
-		intArray[2] = 0;
-		intArray[3] = YEARS;
-		intArray[4] = RawDataUtilities.ORA_INTERVAL_OFFSET + MONTHS;
-		// As byte array
 		final byte[] byteArray = new byte[IntervalYearToMonth.DATA_LENGTH];
-		for (int i = 0; i < byteArray.length; i++) {
-			byteArray[i] = (byte) intArray[i];
-		}
+		byteArray[0] = (byte) 0x80;
+		byteArray[1] = 0;
+		byteArray[2] = 0;
+		byteArray[3] = YEARS;
+		byteArray[4] = Interval.ORA_INTERVAL_OFFSET + MONTHS;
+		final byte[] byteArrayWithOffset = new byte[byteArray.length + OFFSET * 3];
+		System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, byteArray.length);
 
 		try {
 			final Period period = Period.of(YEARS, MONTHS, 0);
@@ -59,12 +56,12 @@ public class IntervalYearToMonthTest {
 			assertEquals(years, YEARS, "Years from INTERVALYM must equal " + YEARS);
 			assertEquals(months, MONTHS, "Months from INTERVALYM must equal " + MONTHS);
 
-			final IntervalYearToMonth iymInt = new IntervalYearToMonth(intArray);
-			System.out.println(iymInt);
-			assertEquals(years, iymInt.getYears(), "Years from IntervalYearToMonth must equal " + YEARS);
-			assertEquals(months, iymInt.getMonths(), "Months from IntervalYearToMonth must equal " + MONTHS);
-			assertTrue(iymInt.toString().equals(period.toString()));
-			assertTrue(IntervalYearToMonth.toPeriod(intArray).toString().equals(period.toString()));
+			final IntervalYearToMonth iymByteOffset = new IntervalYearToMonth(byteArrayWithOffset, OFFSET);
+			System.out.println(iymByteOffset);
+			assertEquals(years, iymByteOffset.getYears(), "Years from IntervalYearToMonth must equal " + YEARS);
+			assertEquals(months, iymByteOffset.getMonths(), "Months from IntervalYearToMonth must equal " + MONTHS);
+			assertTrue(iymByteOffset.toString().equals(period.toString()));
+			assertTrue(IntervalYearToMonth.toPeriod(byteArrayWithOffset, OFFSET).toString().equals(period.toString()));
 
 			final IntervalYearToMonth iymByte = new IntervalYearToMonth(byteArray);
 			System.out.println(iymByte);
