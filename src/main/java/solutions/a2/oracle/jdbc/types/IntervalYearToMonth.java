@@ -114,7 +114,7 @@ public class IntervalYearToMonth extends Interval implements Serializable {
 	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> to a {@link java.time.Period Period}
 	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
-	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/TIMESTAMPTZ.html">TIMESTAMPTZ</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
 	 * @return {@link java.time.Period  Period} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
 	 * @throws SQLException if the byte array does not contain exactly 5 values
 	 */
@@ -150,6 +150,23 @@ public class IntervalYearToMonth extends Interval implements Serializable {
 		}
 		final int years = decodeOraBytes(value, 0);
 		final int months = Byte.toUnsignedInt(value[4]) - ORA_INTERVAL_OFFSET;
+		return toString(years, months);
+	}
+
+	/**
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">ISO-8601</a> format
+	 * 
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
+	 * @return String representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALYM.html">INTERVALYM</a> object
+	 * @throws SQLException if the byte array does not contain exactly 5 values
+	 */
+	public static String toString(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for Oracle INTERVALYM in array with length = " + value.length);
+		}
+		final int years = decodeOraBytes(value, offset);
+		final int months = Byte.toUnsignedInt(value[offset + 4]) - ORA_INTERVAL_OFFSET;
 		return toString(years, months);
 	}
 
