@@ -35,28 +35,25 @@ public class IntervalDayToSecondTest {
 	private static final int HOURS = 14;
 	private static final int MINUTES = 33;
 	private static final int SECONDS = 15;
+	private final static int OFFSET = 7;
 
 	@Test
 	public void test() {
-		// Duration of 77 days, 14 hours, 33 minutes, and 15 months...
-		// As int array
-		final int[] intArray = new int[IntervalDayToSecond.DATA_LENGTH];
-		intArray[0] = 128;
-		intArray[1] = 0;
-		intArray[2] = 0;
-		intArray[3] = DAYS;
-		intArray[4] = RawDataUtilities.ORA_INTERVAL_OFFSET + HOURS;
-		intArray[5] = RawDataUtilities.ORA_INTERVAL_OFFSET + MINUTES;
-		intArray[6] = RawDataUtilities.ORA_INTERVAL_OFFSET + SECONDS;
-		intArray[7] = 128;
-		intArray[8] = 0;
-		intArray[9] = 0;
-		intArray[10] = 0;
-		// As byte array
+		// Duration of 77 days, 14 hours, 33 minutes, and 15 seconds...
 		final byte[] byteArray = new byte[IntervalDayToSecond.DATA_LENGTH];
-		for (int i = 0; i < byteArray.length; i++) {
-			byteArray[i] = (byte) intArray[i];
-		}
+		byteArray[0] = (byte) 0x80;
+		byteArray[1] = 0;
+		byteArray[2] = 0;
+		byteArray[3] = DAYS;
+		byteArray[4] = Interval.ORA_INTERVAL_OFFSET + HOURS;
+		byteArray[5] = Interval.ORA_INTERVAL_OFFSET + MINUTES;
+		byteArray[6] = Interval.ORA_INTERVAL_OFFSET + SECONDS;
+		byteArray[7] = (byte) 0x80;
+		byteArray[8] = 0;
+		byteArray[9] = 0;
+		byteArray[10] = 0;
+		final byte[] byteArrayWithOffset = new byte[byteArray.length + OFFSET * 3];
+		System.arraycopy(byteArray, 0, byteArrayWithOffset, OFFSET, byteArray.length);
 
 		try {
 			final Duration duration = Duration.ZERO
@@ -75,15 +72,6 @@ public class IntervalDayToSecondTest {
 			assertEquals(minutes, MINUTES, "Minutes from INTERVALDS must equal " + MINUTES);
 			assertEquals(seconds, SECONDS, "Seconds from INTERVALDS must equal " + SECONDS);
 
-			final IntervalDayToSecond idsInt = new IntervalDayToSecond(intArray);
-			System.out.println(idsInt);
-			assertEquals(days, idsInt.getDays(), "Days from IntervalDayToSecond must equal " + DAYS);
-			assertEquals(hours, idsInt.getHours(), "Hours from IntervalDayToSecond must equal " + HOURS);
-			assertEquals(minutes, idsInt.getMinutes(), "Minutes from IntervalDayToSecond must equal " + MINUTES);
-			assertEquals(seconds, idsInt.getSeconds(), "Seconds from IntervalDayToSecond must equal " + SECONDS);
-			assertTrue(IntervalDayToSecond.toDuration(intArray).toString().equals(duration.toString()));
-			assertTrue(Duration.parse(idsInt.toString()).equals(duration));
-
 			final IntervalDayToSecond idsByte = new IntervalDayToSecond(byteArray);
 			System.out.println(idsByte);
 			assertEquals(days, idsByte.getDays(), "Days from IntervalDayToSecond must equal " + DAYS);
@@ -92,6 +80,15 @@ public class IntervalDayToSecondTest {
 			assertEquals(seconds, idsByte.getSeconds(), "Seconds from IntervalDayToSecond must equal " + SECONDS);
 			assertTrue(IntervalDayToSecond.toDuration(byteArray).toString().equals(duration.toString()));
 			assertTrue(Duration.parse(idsByte.toString()).equals(duration));
+
+			final IntervalDayToSecond idsByteOffset = new IntervalDayToSecond(byteArrayWithOffset, OFFSET);
+			System.out.println(idsByteOffset);
+			assertEquals(days, idsByteOffset.getDays(), "Days from IntervalDayToSecond must equal " + DAYS);
+			assertEquals(hours, idsByteOffset.getHours(), "Hours from IntervalDayToSecond must equal " + HOURS);
+			assertEquals(minutes, idsByteOffset.getMinutes(), "Minutes from IntervalDayToSecond must equal " + MINUTES);
+			assertEquals(seconds, idsByteOffset.getSeconds(), "Seconds from IntervalDayToSecond must equal " + SECONDS);
+			assertTrue(IntervalDayToSecond.toDuration(byteArrayWithOffset, OFFSET).toString().equals(duration.toString()));
+			assertTrue(Duration.parse(idsByteOffset.toString()).equals(duration));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			fail("Exception " + e.getMessage());

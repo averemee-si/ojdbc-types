@@ -23,7 +23,7 @@ import java.time.Duration;
  * 
  * Oracle Type 183
  */
-public class IntervalDayToSecond implements Serializable {
+public class IntervalDayToSecond extends Interval implements Serializable {
 
 	private static final long serialVersionUID = 4962903459011562735L;
 	
@@ -60,31 +60,25 @@ public class IntervalDayToSecond implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
 	public IntervalDayToSecond(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
-		}
-		days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		hours = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		minutes = Byte.toUnsignedInt(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		seconds = Byte.toUnsignedInt(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
+		this(value, 0);
 	}
 
 	/**
-	 * Creates IntervalDayToSecond from a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDs</a>
+	 * Creates IntervalDayToSecond from a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a>
 	 * 
 	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
+	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
-	public IntervalDayToSecond(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
+	public IntervalDayToSecond(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for Oracle INTERVALDS in array with length = " + value.length);
 		}
-		days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		hours = value[4] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		minutes = value[5] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		seconds = value[6] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
+		days = decodeOraBytes(value, offset);
+		hours = Byte.toUnsignedInt(value[offset + 4]) - ORA_INTERVAL_OFFSET;
+		minutes = Byte.toUnsignedInt(value[offset + 5]) - ORA_INTERVAL_OFFSET;
+		seconds = Byte.toUnsignedInt(value[offset + 6]) - ORA_INTERVAL_OFFSET;
+		nanos = decodeOraBytes(value, offset + 7);
 	}
 
 	/**
@@ -149,33 +143,26 @@ public class IntervalDayToSecond implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
 	public static Duration toDuration(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
-		}
-		final int days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int hours = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int minutes = Byte.toUnsignedInt(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int seconds = Byte.toUnsignedInt(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
-		return toDuration(days, hours, minutes, seconds, nanos);
+		return toDuration(value, 0);
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> to a {@link java.time.Duration Duration}
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> to a {@link java.time.Duration Duration}
 	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
 	 * @return {@link java.time.Duration Duration} representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
+	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
-	public static Duration toDuration(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
+	public static Duration toDuration(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for Oracle INTERVALDS in array with length = " + value.length);
 		}
-		final int days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int hours = value[4] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int minutes = value[5] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int seconds = value[6] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
+		final int days = decodeOraBytes(value, offset);
+		final int hours = Byte.toUnsignedInt(value[offset + 4]) - ORA_INTERVAL_OFFSET;
+		final int minutes = Byte.toUnsignedInt(value[offset + 5]) - ORA_INTERVAL_OFFSET;
+		final int seconds = Byte.toUnsignedInt(value[offset + 6]) - ORA_INTERVAL_OFFSET;
+		final int nanos = decodeOraBytes(value, offset + 7);
 		return toDuration(days, hours, minutes, seconds, nanos);
 	}
 
@@ -213,33 +200,26 @@ public class IntervalDayToSecond implements Serializable {
 	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
 	public static String toString(final byte[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
-		}
-		final int days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int hours = Byte.toUnsignedInt(value[4]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int minutes = Byte.toUnsignedInt(value[5]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int seconds = Byte.toUnsignedInt(value[6]) - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
-		return toString(days, hours, minutes, seconds, nanos);
+		return toString(value, 0);
 	}
 
 	/**
-	 * Converts a int array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">ISO-8601</a> format
+	 * Converts a byte array representing of <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> to a string in <a href="https://en.wikipedia.org/wiki/ISO_8601#Durations">ISO-8601</a> format
 	 * 
-	 * @param value a int array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
+	 * @param value a byte array representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
+	 * @param offset the index of the first byte representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
 	 * @return String representing the <a href="https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/oracle/sql/INTERVALDS.html">INTERVALDS</a> object
-	 * @throws SQLException if the int array does not contain exactly 11 values
+	 * @throws SQLException if the byte array does not contain exactly 11 values
 	 */
-	public static String toString(final int[] value) throws SQLException {
-		if (value.length != DATA_LENGTH) {
-			throw new SQLException("Wrong representation of Oracle INTERVALDS with length = " + value.length);
+	public static String toString(final byte[] value, final int offset) throws SQLException {
+		if (offset + DATA_LENGTH > value.length) {
+			throw new SQLException("Not enough data for Oracle INTERVALDS in array with length = " + value.length);
 		}
-		final int days = RawDataUtilities.decodeOraBytes4I(value, 0);
-		final int hours = value[4] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int minutes = value[5] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int seconds = value[6] - RawDataUtilities.ORA_INTERVAL_OFFSET;
-		final int nanos = RawDataUtilities.decodeOraBytes4I(value, 7);
+		final int days = decodeOraBytes(value, offset);
+		final int hours = Byte.toUnsignedInt(value[offset + 4]) - ORA_INTERVAL_OFFSET;
+		final int minutes = Byte.toUnsignedInt(value[offset + 5]) - ORA_INTERVAL_OFFSET;
+		final int seconds = Byte.toUnsignedInt(value[offset + 6]) - ORA_INTERVAL_OFFSET;
+		final int nanos = decodeOraBytes(value, offset + 7);
 		return toString(days, hours, minutes, seconds, nanos);
 	}
 

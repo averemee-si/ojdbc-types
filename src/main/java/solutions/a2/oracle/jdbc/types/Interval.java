@@ -19,17 +19,8 @@ public abstract class Interval {
 
 	static final int ORA_INTERVAL_OFFSET = 60;
 
-	static int decodeOraBytes(final int[] array, final int msb) {
-		return
-			array[msb + 3] | array[msb + 2] << 8 | array[msb + 1] << 16 | array[msb] << 24;
-	}
-
-	static int decodeOraBytes(final byte[] array, final int msb) {
-		return -(Integer.MIN_VALUE - getU32BE(array, msb));
-	}
-
-	static int decodeOraBytes4I(final int[] array, final int msb) {
-		return -(Integer.MIN_VALUE - decodeOraBytes(array, msb));
+	static int decodeOraBytes(final byte[] array, final int offset) {
+		return -(Integer.MIN_VALUE - getU32BE(array, offset));
 	}
 
 }
