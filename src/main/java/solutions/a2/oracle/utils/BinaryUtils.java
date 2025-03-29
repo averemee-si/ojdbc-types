@@ -195,4 +195,18 @@ public interface BinaryUtils {
 				Byte.toUnsignedInt(buffer[offset + 3]);
 	}
 
+	/**
+	 * 
+	 * Converts byte array to unsigned short
+	 * 
+	 * @param buffer
+	 * @param offset
+	 * @return
+	 */
+	public static short getU16BE(final byte[] buffer, final int offset) {
+		return
+				(short) (Byte.toUnsignedInt(buffer[offset]) << 8	|
+						Byte.toUnsignedInt(buffer[offset + 1]));
+	}
+
 }
