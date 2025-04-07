@@ -43,13 +43,24 @@ public class LobId implements Serializable {
 	 * 
 	 * @param bytes
 	 * @param off
+	 */
+	public LobId(final byte[] bytes, final int off) {
+		this(bytes, off, SIZE);
+	}
+
+	/**
+	 * 
+	 * @param bytes
+	 * @param off
 	 * @param len
 	 */
 	public LobId(final byte[] bytes, final int off, final int len) {
 		if (len != SIZE) {
 			throw new IllegalArgumentException("Wrong length for LOB ID!");
+		} else if (off + SIZE > bytes.length) {
+			throw new IllegalArgumentException("Not enough data for LOB ID!");
 		} else {
-			this.bytes = Arrays.copyOfRange(bytes, off, off + len);
+			this.bytes = Arrays.copyOfRange(bytes, off, off + SIZE);
 		}
 	}
 
@@ -65,6 +76,16 @@ public class LobId implements Serializable {
 		final StringBuilder sb = new StringBuilder(SIZE * 2);
 		for (int i = 0; i < SIZE; i++)
 			sb.append(String.format("%X", Byte.toUnsignedInt(bytes[i])));
+		return sb.toString();
+	}
+
+	public String toStringWithDots() {
+		final StringBuilder sb = new StringBuilder(SIZE * 2);
+		for (int i = 0; i < SIZE; i++) {
+			sb.append(String.format("%02x", Byte.toUnsignedInt(bytes[i])));
+			if (i < SIZE -1)
+				sb.append('.');
+		}
 		return sb.toString();
 	}
 

@@ -33,7 +33,7 @@ public class LobIdTest {
 		LobId lid01 = new LobId(
 				hexToRaw(
 						"00 70 00 01 01 0c 00 00 00 01 00 00 00 01 00 00 2f da fe b1 00 10 09 00 00 00 00 00 00 00 00 00 00 00 00 00"
-							.replace(" ", "")), 0xA, 0xA);
+							.replace(" ", "")), 0xA);
 		LobId lid02 = new LobId(
 				hexToRaw(
 						"00 00 00 01 00 00 2f da fe b1"
@@ -45,7 +45,7 @@ public class LobIdTest {
 		LobId lid03 = new LobId(
 				hexToRaw(
 						"00 00 00 01 00 00 2f da fe b2"
-							.replace(" ", "")));
+							.replace(" ", "")), 0, 0xA);
 		assertTrue(lid03.equals(lid03));
 		assertFalse(lid03.equals(lid01));
 		assertFalse(lid03.equals(lid02));
