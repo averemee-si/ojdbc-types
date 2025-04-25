@@ -23,12 +23,12 @@ import java.util.zip.Inflater;
 
 /**
  * 
- * This class provides support for decompression Oracle Database LOB objects containing CMap (kdli->flg2 & 0x10 = 0x10)
+ * This class provides support for decompression Oracle Database LOB objects containing CMap (kdli->flg2 & 0x10 == 0x10)
  * 
  */
 public class CMapInflater {
 
-	public static byte[] DEADBEEF = {(byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF};
+	public static final byte[] DEADBEEF = {(byte) 0xDE, (byte) 0xAD, (byte) 0xBE, (byte) 0xEF};
 	
 	/**
 	 * 
