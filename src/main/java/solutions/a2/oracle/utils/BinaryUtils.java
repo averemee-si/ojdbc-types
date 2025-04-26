@@ -197,6 +197,21 @@ public interface BinaryUtils {
 
 	/**
 	 * 
+	 * Converts byte array to unsigned int
+	 * 
+	 * @param buffer
+	 * @param offset
+	 * @return
+	 */
+	public static int getU24BE(final byte[] buffer, final int offset) {
+		return
+				Byte.toUnsignedInt(buffer[offset])     << 16           |
+				Byte.toUnsignedInt(buffer[offset + 1]) << 8            |
+				Byte.toUnsignedInt(buffer[offset + 2]);
+	}
+
+	/**
+	 * 
 	 * Converts byte array to unsigned short
 	 * 
 	 * @param buffer
