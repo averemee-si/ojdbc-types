@@ -12,4 +12,3 @@
  */
 
 rootProject.name = 'ojdbc-types'
-include('lib')
