@@ -14,6 +14,7 @@
 package solutions.a2.oracle.internals;
 
 import static solutions.a2.oracle.utils.BinaryUtils.getU16BE;
+import static solutions.a2.oracle.utils.BinaryUtils.getU32BE;
 import static solutions.a2.oracle.utils.BinaryUtils.indexOf;
 
 import java.io.IOException;
@@ -53,6 +54,16 @@ public class CMapInflater {
 	 */
 	public static void inflate(final byte[] cMapData, final OutputStream os) throws IOException {
 		inflate(cMapData, os, new byte[0x2000]);
+	}
+
+	/**
+	 * 
+	 * @param cMapData
+	 * @param offset
+	 * @return total length of compressed cmap structure
+	 */
+	public static int length(final byte[] cMapData, final int offset) {
+		return getU32BE(cMapData, offset + 0x11);
 	}
 
 	private static void inflate(final byte[] cMapData, final OutputStream os, final byte[] buffer) throws IOException {
