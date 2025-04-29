@@ -16,6 +16,7 @@ plugins {
 	id "org.owasp.dependencycheck" version "12.1.1"
 	id "maven-publish"
     id "signing"
+    id "org.jreleaser" version "1.17.0"
 }
 
 java {
@@ -82,7 +83,7 @@ publishing {
             from components.java
 
             pom {
-                name = "Oracle JDBC Types"
+                name = "Oracle JDBC Types and some RDBMS internal structures parser"
                 packaging = "jar"
                 url = "https://github.com/averemee-si/ojdbc-types"
                 description =
@@ -112,24 +113,46 @@ publishing {
                         organizationUrl = "https://a2-solutions.eu/"
                     }
                 }
+                inceptionYear = "2023"
             }
         }
     }
 
     repositories {
-	maven {
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-	    credentials {
-	        username = project.hasProperty('ossrh.Username') ? project.property('ossrh.Username') : ""
-	        password = project.hasProperty('ossrh.Password') ? project.property('ossrh.Password') : ""
+	    maven {
+	        name = "LocalMavenWithChecksums"
+            url = uri(layout.buildDirectory.dir("staging-deploy"))
 	    }
-	}
     }
 }
 
-signing {
-    def signingKey = project.hasProperty('signing.Key') ? project.property('signing.Key') : ""
-    def signingPassword = project.hasProperty('signing.Password') ? project.property('signing.Password') : ""
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign publishing.publications.mavenJava
+
+jreleaser {
+    project {
+        copyright = "Copyright (c) ${LocalDate.now().year} A2 Rešitve, d.o.o."
+        description = "Oracle JDBC Types and some RDBMS internal structures parser"
+    }
+    signing {
+        active = "ALWAYS"
+        armored = true
+        mode = "FILE"
+        publicKey = ".gradle/public.key"
+        secretKey = ".gradle/private.key"
+    }
+    deploy {
+        maven {
+             mavenCentral {
+                 sonatype {
+                     active = 'ALWAYS'
+                     url = 'https://central.sonatype.com/api/v1/publisher'
+                     stagingRepository('build/staging-deploy')
+                 }
+             }
+        }
+    }
+    release {
+        github {
+            enabled = false
+        }
+    }
 }
