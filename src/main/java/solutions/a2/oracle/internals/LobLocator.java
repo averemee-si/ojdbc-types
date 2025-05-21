@@ -108,7 +108,9 @@ public class LobLocator implements Serializable {
 					if ((ba[offset + 0x1D] & (byte)0x2) != 0)
 						dataLength = getU32BE(ba, offset + 0x1E);
 					else
-						dataLength = getU16BE(ba, offset + 0x1E);
+						dataLength = (ba[offset + 0x1D] & (byte)0x1) == 1
+										? getU24BE(ba, offset + 0x1E)
+										: getU16BE(ba, offset + 0x1E);
 				}
 				
 			} else {
@@ -116,7 +118,9 @@ public class LobLocator implements Serializable {
 					if ((ba[offset + 0x1A] & (byte)0x2) != 0)
 						dataLength = getU32BE(ba, offset + 0x1B);
 					else
-						dataLength = getU16BE(ba, offset + 0x1B);
+						dataLength = (ba[offset + 0x1A] & (byte)0x1) == 1
+										? getU24BE(ba, offset + 0x1B)
+										: getU16BE(ba, offset + 0x1B);
 				}
 			}
 		} else {
