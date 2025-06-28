@@ -13,6 +13,8 @@
 
 package solutions.a2.oracle.utils;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.time.LocalDateTime;
 
@@ -222,6 +224,36 @@ public interface BinaryUtils {
 		return
 				(short) (Byte.toUnsignedInt(buffer[offset]) << 8	|
 						Byte.toUnsignedInt(buffer[offset + 1]));
+	}
+	
+	/**
+	 * 
+	 * 	Writes unsigned 16-bit integer to specified OutputStream
+	 * 
+	 * @param os
+	 * @param u16
+	 * @throws IOException
+	 */
+	public static void putU16(final OutputStream os, final int u16) throws IOException {
+		os.write(u16 >> 8);
+		os.write((byte)u16);
+	}
+
+	/**
+	 * 
+	 * Writes Oracle internal column size to specified OutputStream
+	 * 
+	 * @param os
+	 * @param colSize
+	 * @throws IOException
+	 */
+	public static void putOraColSize(final OutputStream os, final int colSize) throws IOException {
+		if (colSize < 0xFE) {
+			os.write(colSize);
+		} else {
+			os.write(0xFE);
+			putU16(os, colSize);
+		}
 	}
 
 }
