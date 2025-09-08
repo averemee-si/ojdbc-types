@@ -241,6 +241,20 @@ public interface BinaryUtils {
 
 	/**
 	 * 
+	 * 	Writes unsigned 24-bit integer to specified OutputStream
+	 * 
+	 * @param os
+	 * @param u24
+	 * @throws IOException
+	 */
+	public static void putU24(final OutputStream os, final int u24) throws IOException {
+		os.write(u24 >> 16);
+		os.write(u24 >> 8);
+		os.write((byte)u24);
+	}
+
+	/**
+	 * 
 	 * Writes Oracle internal column size to specified OutputStream
 	 * 
 	 * @param os
